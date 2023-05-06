@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.dao.ItemDao;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.validator.ItemValidator;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.model.User;
 
@@ -25,6 +26,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(ItemDto itemDto, long userId) {
+        ItemValidator.itemDtoValidation(itemDto);
         User user = userDao.getById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
         Item item = ItemMapper.DtoToItem(itemDto, user);
@@ -83,13 +85,20 @@ public class ItemServiceImpl implements ItemService {
     private void updateItem(Item newItem, Item oldItem) {
         if (newItem.getName() == null) {
             newItem.setName(oldItem.getName());
+        } else {
+            ItemValidator.nameValidation(newItem.getName());
         }
+
         if (newItem.getDescription() == null) {
             newItem.setDescription(oldItem.getDescription());
+        } else {
+            ItemValidator.descriptionValidation(newItem.getDescription());
         }
+
         if (newItem.getOwner() == null) {
             newItem.setOwner(oldItem.getOwner());
         }
+
         if (newItem.getAvailable() == null) {
             newItem.setAvailable(oldItem.getAvailable());
         }

@@ -7,6 +7,7 @@ import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.validator.UserValidator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
+        UserValidator.userDtoValidation(userDto);
         User user = UserMapper.DtoToUser(userDto);
         User savedUser = userDao.createUser(user);
         UserDto savedDto = UserMapper.userToDto(savedUser);
@@ -58,9 +60,14 @@ public class UserServiceImpl implements UserService {
     private void updateUser(User newUser, User oldUser) {
         if (newUser.getName() == null) {
             newUser.setName(oldUser.getName());
+        } else {
+            UserValidator.nameValidation(newUser.getName());
         }
+
         if (newUser.getEmail() == null) {
             newUser.setEmail(oldUser.getEmail());
+        } else {
+            UserValidator.nameValidation(newUser.getEmail());
         }
     }
 

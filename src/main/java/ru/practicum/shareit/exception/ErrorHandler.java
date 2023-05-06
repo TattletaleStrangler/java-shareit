@@ -23,7 +23,13 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConflictException(final UserAlreadyExistsException e) {
+    public ErrorResponse handleAlreadyExistsException(final UserAlreadyExistsException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(final ValidationException e) {
         return new ErrorResponse(e.getMessage());
     }
 

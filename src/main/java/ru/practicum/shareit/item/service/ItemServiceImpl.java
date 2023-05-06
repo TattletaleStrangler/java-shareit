@@ -29,7 +29,7 @@ public class ItemServiceImpl implements ItemService {
         ItemValidator.itemDtoValidation(itemDto);
         User user = userDao.getById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
-        Item item = ItemMapper.DtoToItem(itemDto, user);
+        Item item = ItemMapper.dtoToItem(itemDto, user);
         Item savedItem = itemDao.createItem(item);
         ItemDto savedItemDto = ItemMapper.itemToDto(savedItem);
         return savedItemDto;
@@ -55,7 +55,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         itemDto.setId(itemId);
-        Item newItem = ItemMapper.DtoToItem(itemDto, user);
+        Item newItem = ItemMapper.dtoToItem(itemDto, user);
         updateItem(newItem, oldItem);
         return ItemMapper.itemToDto(itemDao.updateItem(newItem));
     }

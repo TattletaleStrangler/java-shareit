@@ -13,7 +13,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static Item DtoToItem(ItemDto itemDto, User owner) {
+    public static Item dtoToItem(ItemDto itemDto, User owner) {
         return Item.builder()
                 .id(itemDto.getId())
                 .name(itemDto.getName())

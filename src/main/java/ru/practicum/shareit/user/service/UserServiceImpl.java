@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(UserDto userDto) {
         UserValidator.userDtoValidation(userDto);
-        User user = UserMapper.DtoToUser(userDto);
+        User user = UserMapper.dtoToUser(userDto);
         User savedUser = userDao.createUser(user);
         UserDto savedDto = UserMapper.userToDto(savedUser);
         return savedDto;
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
         User oldUser = userDao.getById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + userId + " не найден."));
         userDto.setId(userId);
-        User newUser = UserMapper.DtoToUser(userDto);
+        User newUser = UserMapper.dtoToUser(userDto);
         updateUser(newUser, oldUser);
         User updatedUser = userDao.updateUser(newUser);
         return UserMapper.userToDto(updatedUser);

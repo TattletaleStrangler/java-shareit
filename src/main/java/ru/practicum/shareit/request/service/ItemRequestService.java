@@ -1,35 +1,12 @@
 package ru.practicum.shareit.request.service;
 
-import ru.practicum.shareit.exception.ItemRequestNotFoundException;
-import ru.practicum.shareit.request.dao.ItemRequestDao;
-import ru.practicum.shareit.request.model.ItemRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+/**
+ * TODO Sprint add-item-requests.
+ */
+@Service
+@RequiredArgsConstructor
 public class ItemRequestService {
-
-    private ItemRequestDao itemRequestDao;
-
-    public ItemRequest createItemRequest(ItemRequest itemRequest) {
-        return itemRequestDao.createItemRequest(itemRequest);
-    }
-
-    public ItemRequest getById(Long id) {
-        return itemRequestDao.getById(id)
-                .orElseThrow(() -> new ItemRequestNotFoundException("Запрос с идентификатором " + id + " не найден."));
-    }
-
-    public ItemRequest updateItemRequest(ItemRequest itemRequest) {
-        return itemRequestDao.updateItemRequest(itemRequest);
-    }
-
-    public List<ItemRequest> findAllItemRequests() {
-        return itemRequestDao.findAllItemRequests();
-    }
-
-    public void deleteItemRequest(Long id) {
-        itemRequestDao.deleteItemRequest(id);
-    }
 }

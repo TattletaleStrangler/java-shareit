@@ -13,10 +13,11 @@ public interface ItemDao {
 
     Item updateItem(Item item);
 
-    List<Item> findAllItems();
+    List<Item> findAllItemsByUserId(long userId);
 
     void deleteItem(Long id);
 
     List<Item> getItemsByUserId(Long userId);
 
+    List<Item> searchByText(String text);
 }

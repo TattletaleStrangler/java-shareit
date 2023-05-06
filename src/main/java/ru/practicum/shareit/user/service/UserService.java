@@ -1,38 +1,17 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.UserNotFoundException;
-import ru.practicum.shareit.user.dao.UserDao;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
+public interface UserService {
+    UserDto createUser(UserDto userDto);
 
-    private final UserDao userDao;
+    UserDto getById(long userId);
 
-    public User createUser(User user) {
-        return userDao.createUser(user);
-    }
+    UserDto updateUser(UserDto userDto, long userId);
 
-    public User getById(Long userId) {
-        return userDao.getById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + userId + " не найден."));
-    }
+    List<UserDto> findAllUsers();
 
-    public User updateUser(User user) {
-        return userDao.updateUser(user);
-    }
-
-    public List<User> findAllUsers() {
-        return userDao.findAllUsers();
-    }
-
-    public void deleteUser(long id) {
-        userDao.deleteUser(id);
-    }
-
+    void deleteUser(long id);
 }

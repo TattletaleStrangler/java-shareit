@@ -5,6 +5,9 @@ import ru.practicum.shareit.booking.model.Booking;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * TODO Sprint add-bookings.
+ */
 public interface BookingDao {
     Booking createBooking(Booking booking);
 

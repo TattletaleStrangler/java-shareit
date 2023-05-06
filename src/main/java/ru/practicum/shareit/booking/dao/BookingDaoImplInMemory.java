@@ -4,7 +4,10 @@ import ru.practicum.shareit.booking.model.Booking;
 
 import java.util.*;
 
-public class BookingDaoImplInMemory implements BookingDao{
+/**
+ * TODO Sprint add-bookings.
+ */
+public class BookingDaoImplInMemory implements BookingDao {
     private Long id = 1L;
     private Map<Long, Booking> bookings = new HashMap<>();
 

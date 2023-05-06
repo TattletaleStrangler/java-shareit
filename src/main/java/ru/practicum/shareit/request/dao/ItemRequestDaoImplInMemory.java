@@ -4,7 +4,10 @@ import ru.practicum.shareit.request.model.ItemRequest;
 
 import java.util.*;
 
-public class ItemRequestDaoImplInMemory implements ItemRequestDao{
+/**
+ * TODO Sprint add-item-requests.
+ */
+public class ItemRequestDaoImplInMemory implements ItemRequestDao {
     private Long id = 1L;
     private Map<Long, ItemRequest> itemRequests = new HashMap<>();
 

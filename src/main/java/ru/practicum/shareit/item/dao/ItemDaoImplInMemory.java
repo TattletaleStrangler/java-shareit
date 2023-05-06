@@ -30,12 +30,16 @@ public class ItemDaoImplInMemory implements ItemDao {
 
     @Override
     public Item updateItem(Item item) {
-        return items.put(item.getId(), item);
+        items.put(item.getId(), item);
+        return item;
     }
 
     @Override
-    public List<Item> findAllItems() {
-        return new ArrayList<>(items.values());
+    public List<Item> findAllItemsByUserId(long userId) {
+        List<Item> userItems = items.values().stream()
+                .filter(item -> item.getOwner().getId().equals(userId))
+                .collect(Collectors.toList());
+        return userItems;
     }
 
     @Override
@@ -47,6 +51,15 @@ public class ItemDaoImplInMemory implements ItemDao {
     public List<Item> getItemsByUserId(Long userId) {
         return items.values().stream()
                 .filter(item -> Objects.equals(item.getOwner().getId(), userId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Item> searchByText(String text) {
+        return items.values().stream()
+                .filter(Item::getAvailable)
+                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
+                        || item.getDescription().toLowerCase().contains(text.toLowerCase()))
                 .collect(Collectors.toList());
     }
 

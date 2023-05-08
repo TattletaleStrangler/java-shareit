@@ -20,7 +20,7 @@ public class UserDaoImplInMemory implements UserDao {
     private final Set<String> emailUniqueSet = new HashSet<>();
 
     @Override
-    public User createUser(User user) {;
+    public User createUser(User user) {
         if (emailUniqueSet.contains(user.getEmail())) {
             log.warn("Пользователь с email = {} уже существует.", user.getEmail());
             throw new UserAlreadyExistsException("Пользователь с email = " + user.getEmail() + " уже существует");

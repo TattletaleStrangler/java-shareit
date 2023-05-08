@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class ItemRequestDaoImplInMemory implements ItemRequestDao {
     private Long id = 1L;
-    private Map<Long, ItemRequest> itemRequests = new HashMap<>();
+    private final Map<Long, ItemRequest> itemRequests = new HashMap<>();
 
     @Override
     public ItemRequest createItemRequest(ItemRequest itemRequest) {

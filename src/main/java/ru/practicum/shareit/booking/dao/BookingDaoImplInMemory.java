@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class BookingDaoImplInMemory implements BookingDao {
     private Long id = 1L;
-    private Map<Long, Booking> bookings = new HashMap<>();
+    private final Map<Long, Booking> bookings = new HashMap<>();
 
     @Override
     public Booking createBooking(Booking booking) {

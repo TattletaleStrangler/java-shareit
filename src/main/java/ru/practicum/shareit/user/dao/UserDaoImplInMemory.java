@@ -16,13 +16,19 @@ public class UserDaoImplInMemory implements UserDao {
 
     private Long id = 1L;
 
-    private Map<Long, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
+    private final Set<String> emailUniqueSet = new HashSet<>();
 
     @Override
-    public User createUser(User user) {
-        checkEmail(user);
+    public User createUser(User user) {;
+        if (emailUniqueSet.contains(user.getEmail())) {
+            log.warn("Пользователь с email = {} уже существует.", user.getEmail());
+            throw new UserAlreadyExistsException("Пользователь с email = " + user.getEmail() + " уже существует");
+        }
+
         user.setId(getId());
         users.put(user.getId(), user);
+        emailUniqueSet.add(user.getEmail());
         return user;
     }
 
@@ -33,10 +39,22 @@ public class UserDaoImplInMemory implements UserDao {
 
     @Override
     public User updateUser(User user) {
-        if (!users.containsKey(user.getId())) {
+        User oldUser = users.get(user.getId());
+
+        if (oldUser == null) {
+            log.warn("Пользователь с идентификатором = {} не найден.", user.getId());
             throw new UserNotFoundException("Пользователь с идентификатором = " + user.getId() + " не найден.");
         }
-        checkEmail(user);
+
+        if (!oldUser.getEmail().equalsIgnoreCase(user.getEmail())) {
+            if (emailUniqueSet.contains(user.getEmail())) {
+                log.warn("Пользователь с email = {} уже существует.", user.getEmail());
+                throw new UserAlreadyExistsException("Пользователь с email = " + user.getEmail() + " уже существует");
+            }
+            emailUniqueSet.remove(oldUser.getEmail());
+        }
+
+        emailUniqueSet.add(user.getEmail());
         users.put(user.getId(), user);
         return user;
     }
@@ -48,19 +66,14 @@ public class UserDaoImplInMemory implements UserDao {
 
     @Override
     public void deleteUser(Long id) {
-        users.remove(id);
+        User removedUser = users.remove(id);
+        if (removedUser != null) {
+            emailUniqueSet.remove(removedUser.getEmail());
+        }
     }
 
     private long getId() {
         return id++;
-    }
-
-    private void checkEmail(User user) {
-        for (User u : users.values()) {
-            if (u.getEmail().equalsIgnoreCase(user.getEmail()) && !u.getId().equals(user.getId())) {
-                throw new UserAlreadyExistsException("Пользователь с email = " + user.getEmail() + " уже существует");
-            }
-        }
     }
 
 }

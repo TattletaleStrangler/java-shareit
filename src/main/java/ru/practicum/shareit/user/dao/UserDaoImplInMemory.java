@@ -10,16 +10,16 @@ import ru.practicum.shareit.user.model.User;
 import java.util.*;
 
 @Slf4j
-@Component
+//@Component
 @RequiredArgsConstructor
-public class UserDaoImplInMemory implements UserDao {
+public class UserDaoImplInMemory  {
 
     private Long id = 1L;
 
     private final Map<Long, User> users = new HashMap<>();
     private final Set<String> emailUniqueSet = new HashSet<>();
 
-    @Override
+//    @Override
     public User createUser(User user) {
         if (emailUniqueSet.contains(user.getEmail())) {
             log.warn("Пользователь с email = {} уже существует.", user.getEmail());
@@ -32,12 +32,12 @@ public class UserDaoImplInMemory implements UserDao {
         return user;
     }
 
-    @Override
+//    @Override
     public Optional<User> getById(Long id) {
         return Optional.ofNullable(users.get(id));
     }
 
-    @Override
+//    @Override
     public User updateUser(User user) {
         User oldUser = users.get(user.getId());
 
@@ -59,12 +59,12 @@ public class UserDaoImplInMemory implements UserDao {
         return user;
     }
 
-    @Override
+//    @Override
     public List<User> findAllUsers() {
         return new ArrayList<>(users.values());
     }
 
-    @Override
+//    @Override
     public void deleteUser(Long id) {
         User removedUser = users.remove(id);
         if (removedUser != null) {

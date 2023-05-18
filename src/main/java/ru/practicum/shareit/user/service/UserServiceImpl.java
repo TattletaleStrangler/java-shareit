@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -10,6 +11,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.validator.UserValidator;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,40 +23,46 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(UserDto userDto) {
         UserValidator.userDtoValidation(userDto);
+        Optional<User> userWithSameEmail = userDao.findByEmail(userDto.getEmail());
+
+        if (userWithSameEmail.isPresent()) {
+            throw new UserAlreadyExistsException("Пользователь с email = " + userDto.getEmail() + " уже существует.");
+        }
+
         User user = UserMapper.dtoToUser(userDto);
-        User savedUser = userDao.createUser(user);
+        User savedUser = userDao.save(user);
         UserDto savedDto = UserMapper.userToDto(savedUser);
         return savedDto;
     }
 
     @Override
     public UserDto getById(long userId) {
-        User user = userDao.getById(userId)
+        User user = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + userId + " не найден."));
         return UserMapper.userToDto(user);
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto, long userId) {
-        User oldUser = userDao.getById(userId)
+    public UserDto updateUser(UserDto userDto, Long userId) {
+        User oldUser = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + userId + " не найден."));
         userDto.setId(userId);
         User newUser = UserMapper.dtoToUser(userDto);
         updateUser(newUser, oldUser);
-        User updatedUser = userDao.updateUser(newUser);
+        User updatedUser = userDao.save(newUser);
         return UserMapper.userToDto(updatedUser);
     }
 
     @Override
     public List<UserDto> findAllUsers() {
-        return userDao.findAllUsers().stream()
+        return userDao.findAll().stream()
                 .map(UserMapper::userToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void deleteUser(long id) {
-        userDao.deleteUser(id);
+        userDao.deleteById(id);
     }
 
     private void updateUser(User newUser, User oldUser) {
@@ -67,7 +75,12 @@ public class UserServiceImpl implements UserService {
         if (newUser.getEmail() == null) {
             newUser.setEmail(oldUser.getEmail());
         } else {
-            UserValidator.nameValidation(newUser.getEmail());
+            UserValidator.emailValidation(newUser.getEmail());
+            Optional<User> userWithSameEmail = userDao.findByEmail(newUser.getEmail());
+
+            if (userWithSameEmail.isPresent() && !userWithSameEmail.get().getId().equals(newUser.getId())) {
+                throw new UserAlreadyExistsException("Пользователь с email = " + newUser.getEmail() + " уже существует.");
+            }
         }
     }
 

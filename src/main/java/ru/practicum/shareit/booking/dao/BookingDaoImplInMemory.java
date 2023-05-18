@@ -7,32 +7,32 @@ import java.util.*;
 /**
  * TODO Sprint add-bookings.
  */
-public class BookingDaoImplInMemory implements BookingDao {
+public class BookingDaoImplInMemory {
     private Long id = 1L;
     private final Map<Long, Booking> bookings = new HashMap<>();
 
-    @Override
+//    @Override
     public Booking createBooking(Booking booking) {
         booking.setId(getId());
         return bookings.put(booking.getId(), booking);
     }
 
-    @Override
+//    @Override
     public Optional<Booking> getById(Long id) {
         return Optional.ofNullable(bookings.get(id));
     }
 
-    @Override
+//    @Override
     public Booking updateBooking(Booking booking) {
         return bookings.put(booking.getId(), booking);
     }
 
-    @Override
+//    @Override
     public List<Booking> findAllBookings() {
         return new ArrayList<>(bookings.values());
     }
 
-    @Override
+//    @Override
     public void deleteBooking(Long id) {
         bookings.remove(id);
     }

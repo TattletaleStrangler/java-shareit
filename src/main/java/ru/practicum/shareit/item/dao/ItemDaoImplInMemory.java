@@ -9,32 +9,32 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
+//@Component
 @RequiredArgsConstructor
-public class ItemDaoImplInMemory implements ItemDao {
+public class ItemDaoImplInMemory {
 
     private Long id = 1L;
     private final Map<Long, Item> items = new HashMap<>();
 
-    @Override
+//    @Override
     public Item createItem(Item item) {
         item.setId(getId());
         items.put(item.getId(), item);
         return item;
     }
 
-    @Override
+//    @Override
     public Optional<Item> getById(Long id) {
         return Optional.ofNullable(items.get(id));
     }
 
-    @Override
+//    @Override
     public Item updateItem(Item item) {
         items.put(item.getId(), item);
         return item;
     }
 
-    @Override
+//    @Override
     public List<Item> findAllItemsByUserId(long userId) {
         List<Item> userItems = items.values().stream()
                 .filter(item -> item.getOwner().getId().equals(userId))
@@ -42,19 +42,19 @@ public class ItemDaoImplInMemory implements ItemDao {
         return userItems;
     }
 
-    @Override
+//    @Override
     public void deleteItem(Long id) {
         items.remove(id);
     }
 
-    @Override
+//    @Override
     public List<Item> getItemsByUserId(Long userId) {
         return items.values().stream()
                 .filter(item -> Objects.equals(item.getOwner().getId(), userId))
                 .collect(Collectors.toList());
     }
 
-    @Override
+//    @Override
     public List<Item> searchByText(String text) {
         return items.values().stream()
                 .filter(Item::getAvailable)

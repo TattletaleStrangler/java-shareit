@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,17 +28,17 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto createItem(ItemDto itemDto, long userId) {
         ItemValidator.itemDtoValidation(itemDto);
-        User user = userDao.getById(userId)
+        User user = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
         Item item = ItemMapper.dtoToItem(itemDto, user);
-        Item savedItem = itemDao.createItem(item);
+        Item savedItem = itemDao.save(item);
         ItemDto savedItemDto = ItemMapper.itemToDto(savedItem);
         return savedItemDto;
     }
 
     @Override
     public ItemDto getById(long itemId) {
-        Item item = itemDao.getById(itemId)
+        Item item = itemDao.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Предмет с идентификатором " + itemId + " не найден."));
 
         return ItemMapper.itemToDto(item);
@@ -45,9 +46,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto updateItem(ItemDto itemDto, long itemId, long userId) {
-        User user = userDao.getById(userId)
+        User user = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
-        Item oldItem = itemDao.getById(itemId)
+        Item oldItem = itemDao.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Предмет с идентификатором " + itemId + " не найден."));
 
         if (!user.equals(oldItem.getOwner())) {
@@ -57,18 +58,18 @@ public class ItemServiceImpl implements ItemService {
         itemDto.setId(itemId);
         Item newItem = ItemMapper.dtoToItem(itemDto, user);
         updateItem(newItem, oldItem);
-        return ItemMapper.itemToDto(itemDao.updateItem(newItem));
+        return ItemMapper.itemToDto(itemDao.save(newItem));
     }
 
     @Override
     public List<ItemDto> findAllItemsByUserId(long userId) {
-        return itemDao.findAllItemsByUserId(userId).stream()
+        return itemDao.findAllByOwnerId(userId).stream()
                 .map(ItemMapper::itemToDto)
                 .collect(Collectors.toList());
     }
 
     public void deleteItem(long id) {
-        itemDao.deleteItem(id);
+        itemDao.deleteById(id);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        return itemDao.searchByText(text).stream()
+        return itemDao.searchByText(text.toLowerCase()).stream()
                 .map(ItemMapper::itemToDto)
                 .collect(Collectors.toList());
     }

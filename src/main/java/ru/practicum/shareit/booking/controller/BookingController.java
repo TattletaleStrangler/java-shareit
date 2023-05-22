@@ -29,27 +29,27 @@ public class BookingController {
     @PatchMapping("/{bookingId}")
     public BookingDto approveBooking(@PathVariable long bookingId, @RequestParam(defaultValue = "false") Boolean approved,
                                      @RequestHeader("X-Sharer-User-Id") long userId) {
-        log.info("Получен запрос PATCH /bookings/{bookingId}?approved={approved}");
+        log.info("Получен запрос PATCH /bookings/{}?approved={}", bookingId, approved);
         return bookingService.approve(bookingId, userId, approved);
     }
 
     @GetMapping("/{bookingId}")
     public BookingDto getBooking(@PathVariable long bookingId, @RequestHeader("X-Sharer-User-Id") long userId) {
-        log.info("Получен запрос GET /bookings/{bookingId}");
+        log.info("Получен запрос GET /bookings/{}", bookingId);
         return bookingService.getById(bookingId, userId);
     }
 
     @GetMapping
-    public List<BookingDto> findBookingsByUserId(@RequestParam(defaultValue = "ALL") BookingState state,
-                                                 @RequestHeader("X-Sharer-User-Id") long userId) {
-        log.info("Получен запрос GET /bookings?state={state}");
+    public List<BookingDto> findBookingsByBookerId(@RequestParam(defaultValue = "ALL") BookingState state,
+                                                   @RequestHeader("X-Sharer-User-Id") long userId) {
+        log.info("Получен запрос GET /bookings?state={}", state);
         return bookingService.findBookingsByBookerId(userId, state);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findBookingsByOwnerId(@RequestParam(defaultValue = "ALL") BookingState state,
-                                                 @RequestHeader("X-Sharer-User-Id") long userId) {
-        log.info("Получен запрос GET /bookings/owner?state={state}");
+                                                  @RequestHeader("X-Sharer-User-Id") long userId) {
+        log.info("Получен запрос GET /bookings/owner?state={}", state);
         return bookingService.findBookingsByOwnerId(userId, state);
     }
 

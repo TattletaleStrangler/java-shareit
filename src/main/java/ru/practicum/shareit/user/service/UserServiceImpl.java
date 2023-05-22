@@ -23,12 +23,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(UserDto userDto) {
         UserValidator.userDtoValidation(userDto);
-        Optional<User> userWithSameEmail = userDao.findByEmail(userDto.getEmail());
-
-        if (userWithSameEmail.isPresent()) {
-            throw new UserAlreadyExistsException("Пользователь с email = " + userDto.getEmail() + " уже существует.");
-        }
-
         User user = UserMapper.dtoToUser(userDto);
         User savedUser = userDao.save(user);
         UserDto savedDto = UserMapper.userToDto(savedUser);

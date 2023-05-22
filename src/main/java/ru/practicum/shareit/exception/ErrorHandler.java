@@ -33,4 +33,11 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(final IllegalArgumentException e) {
+        String state = e.getMessage().substring(e.getMessage().lastIndexOf(".") + 1);
+        return new ErrorResponse("Unknown state: " + state);
+    }
+
 }

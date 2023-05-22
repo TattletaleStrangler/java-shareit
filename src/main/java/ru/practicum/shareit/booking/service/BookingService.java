@@ -12,8 +12,6 @@ public interface BookingService {
 
     BookingDto createBooking(BookingDtoSmall bookingDto, long userId);
 
-    BookingDto updateBooking(BookingDto bookingDto, long itemId, long userId);
-
     BookingDto getById(long bookingId, long userId);
 
     BookingDto approve(long bookingId, long userId, boolean approved);

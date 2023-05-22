@@ -3,7 +3,10 @@ package ru.practicum.shareit.item.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentDtoResponse;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
@@ -11,10 +14,10 @@ import java.util.List;
 /**
  * TODO Sprint add-controllers.
  */
-@RestController
-@RequestMapping("/items")
 @Slf4j
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/items")
 public class ItemController {
 
     private final ItemService itemService;
@@ -33,15 +36,15 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getById(@PathVariable long itemId) {
+    public ItemDtoWithBooking getById(@PathVariable long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Получен запрос GET /items/{}", itemId);
-        return itemService.getById(itemId);
+        return itemService.getById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemDtoWithBooking> getAllByOwnerId(@RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Получен запрос GET /items");
-        return itemService.findAllItemsByUserId(userId);
+        return itemService.findAllItemsByOwnerId(userId);
     }
 
     @GetMapping("/search")
@@ -49,4 +52,12 @@ public class ItemController {
         log.info("Получен запрос GET /items/search?text={}", text);
         return itemService.searchByText(text);
     }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDtoResponse addComment(@RequestBody CommentDto commentDto, @PathVariable long itemId,
+                                         @RequestHeader("X-Sharer-User-Id") long userId) {
+        log.info("Получен запрос к эндпоинту POST /items/{itemId}/comment");
+        return itemService.addComment(commentDto, userId, itemId);
+    }
+
 }

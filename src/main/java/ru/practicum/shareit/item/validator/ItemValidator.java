@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.validator;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 @Slf4j
@@ -30,6 +31,13 @@ public class ItemValidator {
         if (available == null) {
             log.warn("Статус предмета не может быть неопределенным.");
             throw new ValidationException("Статус предмета не может быть неопределенным.");
+        }
+    }
+
+    public static void commentValidation(CommentDto comment) {
+        if (comment.getText().isBlank()) {
+            log.warn("Текст комментария не может быть пустым.");
+            throw new ValidationException("Текст комментария не может быть пустым.");
         }
     }
 

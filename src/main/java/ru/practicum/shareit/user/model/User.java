@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,15 +17,16 @@ import javax.persistence.*;
 @Table(name = "users", schema = "public")
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", length=256, nullable=false)
+    @Column(name = "name", length = 256, nullable = false)
     private String name;
 
-    @Column(name = "email", length=512, nullable = false, unique=true)
+    @Column(name = "email", length = 512, nullable = false, unique = true)
     private String email;
 }

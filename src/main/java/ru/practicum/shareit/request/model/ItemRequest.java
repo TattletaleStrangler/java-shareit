@@ -1,12 +1,13 @@
 package ru.practicum.shareit.request.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * TODO Sprint add-item-requests.
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @Builder
 @Entity
 @Table(name = "requests", schema = "public")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ItemRequest {
 
     @Id
@@ -26,10 +28,10 @@ public class ItemRequest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    @JoinColumn(name="requestor_id")
+    @JoinColumn(name = "requestor_id")
     private User requestor;
 
     @Column(name = "created", nullable = false)
-    private LocalDate created;
+    private LocalDateTime created;
 
 }

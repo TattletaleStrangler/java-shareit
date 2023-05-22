@@ -137,7 +137,7 @@ public class ItemServiceImpl implements ItemService {
 
         Comment comment = ItemMapper.dtoToComment(commentDto, item, user, LocalDateTime.now());
         Comment savedComment = commentDao.save(comment);
-        CommentDtoResponse savedCommetDto = ItemMapper.CommentDtoResponse(savedComment);
+        CommentDtoResponse savedCommetDto = ItemMapper.commentDtoResponse(savedComment);
         return savedCommetDto;
     }
 

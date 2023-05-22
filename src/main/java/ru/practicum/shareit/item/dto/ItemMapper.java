@@ -49,7 +49,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static CommentDtoResponse CommentDtoResponse(Comment comment) {
+    public static CommentDtoResponse commentDtoResponse(Comment comment) {
         return CommentDtoResponse.builder()
                 .id(comment.getId())
                 .text(comment.getText())
@@ -60,7 +60,7 @@ public class ItemMapper {
 
     public static List<CommentDtoResponse> commentsToDtoResponse(List<Comment> comments) {
         return comments.stream()
-                .map(ItemMapper::CommentDtoResponse)
+                .map(ItemMapper::commentDtoResponse)
                 .collect(Collectors.toList());
     }
 

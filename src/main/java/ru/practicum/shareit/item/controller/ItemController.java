@@ -59,5 +59,4 @@ public class ItemController {
         log.info("Получен запрос к эндпоинту POST /items/{itemId}/comment");
         return itemService.addComment(commentDto, userId, itemId);
     }
-
 }

@@ -9,11 +9,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
 import ru.practicum.shareit.item.service.ItemService;
 
+import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -54,9 +52,10 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDtoResponse addComment(@RequestBody CommentDto commentDto, @PathVariable long itemId,
+    public CommentDtoResponse addComment(@Valid @RequestBody CommentDto commentDto, @PathVariable long itemId,
                                          @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Получен запрос к эндпоинту POST /items/{itemId}/comment");
         return itemService.addComment(commentDto, userId, itemId);
     }
+
 }

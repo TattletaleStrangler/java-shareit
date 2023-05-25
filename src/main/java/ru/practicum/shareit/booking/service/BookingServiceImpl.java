@@ -27,9 +27,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {

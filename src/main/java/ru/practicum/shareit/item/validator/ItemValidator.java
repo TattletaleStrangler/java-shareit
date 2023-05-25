@@ -34,11 +34,4 @@ public class ItemValidator {
         }
     }
 
-    public static void commentValidation(CommentDto comment) {
-        if (comment.getText().isBlank()) {
-            log.warn("Текст комментария не может быть пустым.");
-            throw new ValidationException("Текст комментария не может быть пустым.");
-        }
-    }
-
 }

@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingDtoForItemDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -9,8 +10,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class ItemMapper {
-    public static ItemDto itemToDto(Item item) {
+    public ItemDto itemToDto(Item item) {
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -19,7 +21,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static ItemDtoWithBooking itemToDtoWithDate(Item item, BookingDtoForItemDto lastBooking, BookingDtoForItemDto nextBooking) {
+    public ItemDtoWithBooking itemToDtoWithDate(Item item, BookingDtoForItemDto lastBooking, BookingDtoForItemDto nextBooking) {
         return ItemDtoWithBooking.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -30,7 +32,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static Item dtoToItem(ItemDto itemDto, User owner) {
+    public Item dtoToItem(ItemDto itemDto, User owner) {
         return Item.builder()
                 .id(itemDto.getId())
                 .name(itemDto.getName())
@@ -40,7 +42,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static Comment dtoToComment(CommentDto commentDto, Item item, User user, LocalDateTime created) {
+    public Comment dtoToComment(CommentDto commentDto, Item item, User user, LocalDateTime created) {
         return Comment.builder()
                 .text(commentDto.getText())
                 .author(user)
@@ -49,7 +51,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static CommentDtoResponse commentDtoResponse(Comment comment) {
+    public CommentDtoResponse commentDtoResponse(Comment comment) {
         return CommentDtoResponse.builder()
                 .id(comment.getId())
                 .text(comment.getText())
@@ -58,7 +60,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static List<CommentDtoResponse> commentsToDtoResponse(List<Comment> comments) {
+    public List<CommentDtoResponse> commentsToDtoResponse(List<Comment> comments) {
         return comments.stream()
                 .map(ItemMapper::commentDtoResponse)
                 .collect(Collectors.toList());

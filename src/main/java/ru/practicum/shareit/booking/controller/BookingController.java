@@ -8,11 +8,9 @@ import ru.practicum.shareit.booking.dto.BookingDtoSmall;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
 
+import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -21,13 +19,13 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public BookingDto createBooking(@RequestBody BookingDtoSmall bookingDto, @RequestHeader("X-Sharer-User-Id") long userId) {
+    public BookingDto createBooking(@Valid @RequestBody BookingDtoSmall bookingDto, @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Получен запрос POST /bookings");
         return bookingService.createBooking(bookingDto, userId);
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto approveBooking(@PathVariable long bookingId, @RequestParam(defaultValue = "false") Boolean approved,
+    public BookingDto approveBooking(@PathVariable long bookingId, @RequestParam Boolean approved,
                                      @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Получен запрос PATCH /bookings/{}?approved={}", bookingId, approved);
         return bookingService.approve(bookingId, userId, approved);

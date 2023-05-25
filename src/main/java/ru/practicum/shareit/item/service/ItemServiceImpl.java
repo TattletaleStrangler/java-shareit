@@ -113,7 +113,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchByText(String text) {
-        if (text.length() == 0) {
+        if (text.isBlank()) {
             return new ArrayList<>();
         }
 
@@ -124,14 +124,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDtoResponse addComment(CommentDto commentDto, long userId, long itemId) {
-        ItemValidator.commentValidation(commentDto);
         Item item = itemDao.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException("Предмет с идентификатором " + itemId + " не найден."));
         User user = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
 
-        if (bookingDao.findFirstByItemIdAndBookerIdAndStatusAndEndLessThan(itemId, userId, BookingStatus.APPROVED,
-                LocalDateTime.now()) == null) {
+        if (!bookingDao.existsByItemIdAndBookerIdAndStatusAndEndLessThan(itemId, userId, BookingStatus.APPROVED,
+                LocalDateTime.now())) {
             throw new ValidationException("Добавлять комментарий к вещи может только пользователь, арендовавший её ранее.");
         }
 

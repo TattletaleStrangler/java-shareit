@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.validator;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 @Slf4j

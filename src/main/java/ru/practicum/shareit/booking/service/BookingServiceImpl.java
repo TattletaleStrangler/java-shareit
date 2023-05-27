@@ -98,7 +98,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<BookingDto> findBookingsByBookerId(long bookerId, BookingState state) {
         User booker = userDao.findById(bookerId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + bookerId + " не найден."));

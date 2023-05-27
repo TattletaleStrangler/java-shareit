@@ -2,16 +2,13 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.UserAlreadyExistsException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.validator.UserValidator;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,7 +19,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        UserValidator.userDtoValidation(userDto);
         User user = UserMapper.dtoToUser(userDto);
         User savedUser = userDao.save(user);
         UserDto savedDto = UserMapper.userToDto(savedUser);
@@ -62,19 +58,10 @@ public class UserServiceImpl implements UserService {
     private void updateUser(User newUser, User oldUser) {
         if (newUser.getName() == null) {
             newUser.setName(oldUser.getName());
-        } else {
-            UserValidator.nameValidation(newUser.getName());
         }
 
         if (newUser.getEmail() == null) {
             newUser.setEmail(oldUser.getEmail());
-        } else {
-            UserValidator.emailValidation(newUser.getEmail());
-            Optional<User> userWithSameEmail = userDao.findByEmail(newUser.getEmail());
-
-            if (userWithSameEmail.isPresent() && !userWithSameEmail.get().getId().equals(newUser.getId())) {
-                throw new UserAlreadyExistsException("Пользователь с email = " + newUser.getEmail() + " уже существует.");
-            }
         }
     }
 

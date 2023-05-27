@@ -13,7 +13,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.model.QBooking;
-import ru.practicum.shareit.booking.validator.BookingValidator;
 import ru.practicum.shareit.exception.BookingNotFoundException;
 import ru.practicum.shareit.exception.ItemNotFoundException;
 import ru.practicum.shareit.exception.UserNotFoundException;
@@ -36,7 +35,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto createBooking(BookingDtoSmall bookingDtoSmall, long userId) {
-        BookingValidator.bookingDtoValidation(bookingDtoSmall);
         User booker = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + userId + " не найден."));
         Item item = itemDao.findById(bookingDtoSmall.getItemId())

@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,10 @@ public class ItemMapper {
     }
 
     public List<CommentDtoResponse> commentsToDtoResponse(List<Comment> comments) {
+        if (comments == null || comments.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         return comments.stream()
                 .map(ItemMapper::commentDtoResponse)
                 .collect(Collectors.toList());

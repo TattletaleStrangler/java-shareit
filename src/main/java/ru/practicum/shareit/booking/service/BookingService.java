@@ -7,7 +7,6 @@ import ru.practicum.shareit.booking.model.BookingState;
 
 import java.util.List;
 
-@Service
 public interface BookingService {
 
     BookingDto createBooking(BookingDtoSmall bookingDto, long userId);

@@ -17,7 +17,6 @@ import ru.practicum.shareit.item.dao.ItemDao;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.validator.ItemValidator;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.model.User;
 
@@ -42,7 +41,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(ItemDto itemDto, long userId) {
-        ItemValidator.itemDtoValidation(itemDto);
         User user = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
         Item item = ItemMapper.dtoToItem(itemDto, user);

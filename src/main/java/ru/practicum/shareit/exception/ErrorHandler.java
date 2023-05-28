@@ -37,9 +37,10 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({ValidationException.class, MethodArgumentNotValidException.class,
+            ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBadRequestException(final ValidationException e) {
+    public ErrorResponse handleBadRequestException(final RuntimeException e) {
         log.info("Получен статус 400 Bad Request {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
@@ -52,19 +53,19 @@ public class ErrorHandler {
         return new ErrorResponse("Unknown state: " + state);
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBadRequestException(final MethodArgumentNotValidException e) {
-        log.info("Получен статус 400 Bad Request {}", e.getMessage(), e);
-        return new ErrorResponse(e.getMessage());
-    }
+//    @ExceptionHandler
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ErrorResponse handleBadRequestException(final MethodArgumentNotValidException e) {
+//        log.info("Получен статус 400 Bad Request {}", e.getMessage(), e);
+//        return new ErrorResponse(e.getMessage());
+//    }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse constraint(ConstraintViolationException e) {
-        log.info("Получен статус 400 Bad Request {}", e.getMessage(), e);
-        return new ErrorResponse(e.getMessage());
-    }
+//    @ExceptionHandler
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    public ErrorResponse constraint(ConstraintViolationException e) {
+//        log.info("Получен статус 400 Bad Request {}", e.getMessage(), e);
+//        return new ErrorResponse(e.getMessage());
+//    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)

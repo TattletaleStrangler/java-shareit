@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -86,10 +87,8 @@ public class ItemServiceImpl implements ItemService {
             throw new NotEnoughRightsException("Пользователь не может редактировать чужие предметы.");
         }
 
-        itemDto.setId(itemId);
-        Item newItem = ItemMapper.dtoToItem(itemDto, user);
-        updateItem(newItem, oldItem);
-        return ItemMapper.itemToDto(itemDao.save(newItem));
+        updateItem(itemDto, user, oldItem);
+        return ItemMapper.itemToDto(itemDao.save(oldItem));
     }
 
     @Override
@@ -107,28 +106,24 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .collect(Collectors.groupingBy(Comment::getItem, toList()));
 
-        Map<Item, List<Booking>> itemsWithLastBookings = bookingDao.findLastByItems(items, BookingStatus.APPROVED, now)
+        Map<Long, Booking> lastBookings = bookingDao.findLastByItems(items, BookingStatus.APPROVED, now)
                 .stream()
-                .collect(Collectors.groupingBy(Booking::getItem, toList()));
+                .collect(Collectors.toMap(b -> b.getItem().getId(), identity(), (existing, replacement) -> existing));
 
-        Map<Item, List<Booking>> itemsWithNextBookings = bookingDao.findNextByItems(items, BookingStatus.APPROVED, now)
+        Map<Long, Booking> nextBookings = bookingDao.findNextByItems(items, BookingStatus.APPROVED, now)
                 .stream()
-                .collect(Collectors.groupingBy(Booking::getItem, toList()));
+                .collect(Collectors.toMap(b -> b.getItem().getId(), identity(), (existing, replacement) -> existing));
 
         for (Item item : items) {
             BookingDtoForItemDto bookingDtoLast = null;
-            if (itemsWithLastBookings != null && itemsWithLastBookings.size() > 0) {
-                List<Booking> lastBookings = itemsWithLastBookings.get(item);
-                if (lastBookings != null && lastBookings.size() > 0) {
-                    bookingDtoLast = BookingMapper.bookingToBookingDtoForItemDto(lastBookings.get(0));
-                }
+
+            if (lastBookings != null && lastBookings.size() > 0) {
+                bookingDtoLast = BookingMapper.bookingToBookingDtoForItemDto(lastBookings.get(item.getId()));
             }
+
             BookingDtoForItemDto bookingDtoNext = null;
-            if (itemsWithNextBookings != null && itemsWithNextBookings.size() > 0) {
-                List<Booking> nextBookings = itemsWithNextBookings.get(item);
-                if (nextBookings != null && nextBookings.size() > 0) {
-                    bookingDtoNext = BookingMapper.bookingToBookingDtoForItemDto(nextBookings.get(0));
-                }
+            if (nextBookings != null && nextBookings.size() > 0) {
+                bookingDtoNext = BookingMapper.bookingToBookingDtoForItemDto(nextBookings.get(item.getId()));
             }
 
             ItemDtoWithBooking itemDtoWithBooking = ItemMapper.itemToDtoWithDate(item, bookingDtoLast, bookingDtoNext);
@@ -136,7 +131,6 @@ public class ItemServiceImpl implements ItemService {
             itemDtoWithBooking.setComments(commentsDto);
             itemDtoWithBookings.add(itemDtoWithBooking);
         }
-
 
         return itemDtoWithBookings;
     }
@@ -174,25 +168,23 @@ public class ItemServiceImpl implements ItemService {
         return savedCommetDto;
     }
 
-    private void updateItem(Item newItem, Item oldItem) {
-        if (newItem.getName() == null) {
-            newItem.setName(oldItem.getName());
-        } else {
-            ItemValidator.nameValidation(newItem.getName());
+    private void updateItem(ItemDto newItem, User owner, Item oldItem) {
+        String name = newItem.getName();
+        if (name != null && !name.isBlank()) {
+            oldItem.setName(name);
         }
 
-        if (newItem.getDescription() == null) {
-            newItem.setDescription(oldItem.getDescription());
-        } else {
-            ItemValidator.descriptionValidation(newItem.getDescription());
+        String description = newItem.getDescription();
+        if (description != null && !description.isBlank()) {
+            oldItem.setDescription(description);
         }
 
-        if (newItem.getOwner() == null) {
-            newItem.setOwner(oldItem.getOwner());
+        if (owner != null) {
+            oldItem.setOwner(owner);
         }
 
-        if (newItem.getAvailable() == null) {
-            newItem.setAvailable(oldItem.getAvailable());
+        if (newItem.getAvailable() != null) {
+            oldItem.setAvailable(newItem.getAvailable());
         }
     }
 }

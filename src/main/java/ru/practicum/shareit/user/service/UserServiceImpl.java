@@ -37,9 +37,8 @@ public class UserServiceImpl implements UserService {
         User oldUser = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + userId + " не найден."));
         userDto.setId(userId);
-        User newUser = UserMapper.dtoToUser(userDto);
-        updateUser(newUser, oldUser);
-        User updatedUser = userDao.save(newUser);
+        updateUser(userDto, oldUser);
+        User updatedUser = userDao.save(oldUser);
         return UserMapper.userToDto(updatedUser);
     }
 
@@ -55,13 +54,15 @@ public class UserServiceImpl implements UserService {
         userDao.deleteById(id);
     }
 
-    private void updateUser(User newUser, User oldUser) {
-        if (newUser.getName() == null) {
-            newUser.setName(oldUser.getName());
+    private void updateUser(UserDto newUser, User oldUser) {
+        String name = newUser.getName();
+        if (name != null && !name.isBlank()) {
+            oldUser.setName(name);
         }
 
-        if (newUser.getEmail() == null) {
-            newUser.setEmail(oldUser.getEmail());
+        String email = newUser.getEmail();
+        if (email != null && !email.isBlank()) {
+            oldUser.setEmail(email);
         }
     }
 

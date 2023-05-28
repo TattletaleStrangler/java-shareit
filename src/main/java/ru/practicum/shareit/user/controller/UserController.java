@@ -8,20 +8,17 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.validator.ValidateMarker;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
 @Slf4j
 @RequiredArgsConstructor
-@Validated
 public class UserController {
     private final UserService userService;
 
     @PostMapping
-    @Validated(ValidateMarker.Create.class)
-    public UserDto createUser(@Valid @RequestBody UserDto userDto) {
+    public UserDto createUser(@Validated(ValidateMarker.Create.class) @RequestBody UserDto userDto) {
         log.info("Получен запрос POST /users");
         return userService.createUser(userDto);
     }
@@ -33,8 +30,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    @Validated(ValidateMarker.Update.class)
-    public UserDto updateUser(@Valid @RequestBody UserDto userDto, @PathVariable Long userId) {
+    public UserDto updateUser(@Validated(ValidateMarker.Update.class) @RequestBody UserDto userDto, @PathVariable Long userId) {
         log.info("Получен запрос PATCH /users/{}", userId);
         return userService.updateUser(userDto, userId);
     }

@@ -16,6 +16,6 @@ public class UserDto {
     private String name;
 
     @NotEmpty(groups = ValidateMarker.Create.class)
-    @Email(groups = {ValidateMarker.Create.class, ValidateMarker.Update.class}, message = "Указанноезначениеemailневаявляетсяадересоелебронноепочты.")
+    @Email(groups = {ValidateMarker.Create.class, ValidateMarker.Update.class}, message = "Указанное значение email не является адресом электронной почты.")
     private String email;
 }

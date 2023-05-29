@@ -85,7 +85,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotEnoughRightsException("Пользователь не может редактировать чужие предметы.");
         }
 
-        updateItem(itemDto, user, oldItem);
+        updateItem(itemDto, oldItem);
         return ItemMapper.itemToDto(itemDao.save(oldItem));
     }
 
@@ -140,7 +140,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> searchByText(String text) {
         if (text.isBlank()) {
-            return new ArrayList<>();
+            return List.of();
         }
 
         return itemDao.searchByText(text.toLowerCase()).stream()
@@ -166,7 +166,7 @@ public class ItemServiceImpl implements ItemService {
         return savedCommetDto;
     }
 
-    private void updateItem(ItemDto newItem, User owner, Item oldItem) {
+    private void updateItem(ItemDto newItem, Item oldItem) {
         String name = newItem.getName();
         if (name != null && !name.isBlank()) {
             oldItem.setName(name);
@@ -175,10 +175,6 @@ public class ItemServiceImpl implements ItemService {
         String description = newItem.getDescription();
         if (description != null && !description.isBlank()) {
             oldItem.setDescription(description);
-        }
-
-        if (owner != null) {
-            oldItem.setOwner(owner);
         }
 
         if (newItem.getAvailable() != null) {

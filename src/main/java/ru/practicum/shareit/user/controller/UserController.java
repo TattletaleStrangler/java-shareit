@@ -2,16 +2,14 @@ package ru.practicum.shareit.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.validator.ValidateMarker;
 
-import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping(path = "/users")
 @Slf4j
@@ -20,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto userDto) {
+    public UserDto createUser(@Validated(ValidateMarker.Create.class) @RequestBody UserDto userDto) {
         log.info("Получен запрос POST /users");
         return userService.createUser(userDto);
     }
@@ -32,7 +30,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@RequestBody UserDto userDto, @PathVariable long userId) {
+    public UserDto updateUser(@Validated(ValidateMarker.Update.class) @RequestBody UserDto userDto, @PathVariable Long userId) {
         log.info("Получен запрос PATCH /users/{}", userId);
         return userService.updateUser(userDto, userId);
     }

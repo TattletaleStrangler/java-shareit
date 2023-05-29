@@ -7,7 +7,6 @@ import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.validator.UserValidator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,54 +19,50 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        UserValidator.userDtoValidation(userDto);
         User user = UserMapper.dtoToUser(userDto);
-        User savedUser = userDao.createUser(user);
+        User savedUser = userDao.save(user);
         UserDto savedDto = UserMapper.userToDto(savedUser);
         return savedDto;
     }
 
     @Override
     public UserDto getById(long userId) {
-        User user = userDao.getById(userId)
+        User user = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + userId + " не найден."));
         return UserMapper.userToDto(user);
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto, long userId) {
-        User oldUser = userDao.getById(userId)
+    public UserDto updateUser(UserDto userDto, Long userId) {
+        User oldUser = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + userId + " не найден."));
         userDto.setId(userId);
-        User newUser = UserMapper.dtoToUser(userDto);
-        updateUser(newUser, oldUser);
-        User updatedUser = userDao.updateUser(newUser);
+        updateUser(userDto, oldUser);
+        User updatedUser = userDao.save(oldUser);
         return UserMapper.userToDto(updatedUser);
     }
 
     @Override
     public List<UserDto> findAllUsers() {
-        return userDao.findAllUsers().stream()
+        return userDao.findAll().stream()
                 .map(UserMapper::userToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void deleteUser(long id) {
-        userDao.deleteUser(id);
+        userDao.deleteById(id);
     }
 
-    private void updateUser(User newUser, User oldUser) {
-        if (newUser.getName() == null) {
-            newUser.setName(oldUser.getName());
-        } else {
-            UserValidator.nameValidation(newUser.getName());
+    private void updateUser(UserDto newUser, User oldUser) {
+        String name = newUser.getName();
+        if (name != null && !name.isBlank()) {
+            oldUser.setName(name);
         }
 
-        if (newUser.getEmail() == null) {
-            newUser.setEmail(oldUser.getEmail());
-        } else {
-            UserValidator.nameValidation(newUser.getEmail());
+        String email = newUser.getEmail();
+        if (email != null && !email.isBlank()) {
+            oldUser.setEmail(email);
         }
     }
 

@@ -1,23 +1,18 @@
 package ru.practicum.shareit.item.dao;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface ItemDao {
+public interface ItemDao extends JpaRepository<Item, Long>, QuerydslPredicateExecutor<Item> {
 
-    Item createItem(Item item);
+    List<Item> findAllByOwnerIdOrderById(long id);
 
-    Optional<Item> getById(Long id);
+    @Query("SELECT it FROM Item AS it WHERE LOWER(it.name) LIKE %:text% OR LOWER(it.description) LIKE %:text% AND it.available = true")
+    List<Item> searchByText(@Param("text") String text);
 
-    Item updateItem(Item item);
-
-    List<Item> findAllItemsByUserId(long userId);
-
-    void deleteItem(Long id);
-
-    List<Item> getItemsByUserId(Long userId);
-
-    List<Item> searchByText(String text);
 }

@@ -1,12 +1,17 @@
 package ru.practicum.shareit.request.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import ru.practicum.shareit.request.dto.AddItemRequestDto;
+import ru.practicum.shareit.request.dto.GetItemRequestDto;
 
-/**
- * TODO Sprint add-item-requests.
- */
-@Service
-@RequiredArgsConstructor
-public class ItemRequestService {
+import java.util.List;
+
+public interface ItemRequestService {
+    GetItemRequestDto createItemRequest(AddItemRequestDto itemRequestDto, long userId);
+
+    List<GetItemRequestDto> findAllByRequesterId(long userId);
+
+    List<GetItemRequestDto> findAll(long userId, int from, int size);
+
+    GetItemRequestDto getById(long itemId, long userId);
+
 }

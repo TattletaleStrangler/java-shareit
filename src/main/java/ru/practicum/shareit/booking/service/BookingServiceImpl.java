@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dao.BookingDao;
@@ -97,25 +98,27 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findBookingsByBookerId(long bookerId, BookingState state) {
+    public List<BookingDto> findBookingsByBookerId(long bookerId, BookingState state, int from, int size) {
         User booker = userDao.findById(bookerId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + bookerId + " не найден."));
 
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by(Sort.Direction.DESC, "start"));
         BooleanExpression byBookerId = QBooking.booking.booker.id.eq(booker.getId());
         BooleanExpression byAnyState = createStatePredicate(state);
-        Iterable<Booking> foundBookings = bookingDao.findAll(byBookerId.and(byAnyState), Sort.by(Sort.Direction.DESC, "start"));
+        Iterable<Booking> foundBookings = bookingDao.findAll(byBookerId.and(byAnyState), page);
         List<BookingDto> result = BookingMapper.bookingListToDto(foundBookings);
         return result;
     }
 
     @Override
-    public List<BookingDto> findBookingsByOwnerId(long ownerId, BookingState state) {
+    public List<BookingDto> findBookingsByOwnerId(long ownerId, BookingState state, int from, int size) {
         User booker = userDao.findById(ownerId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + ownerId + " не найден."));
 
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by(Sort.Direction.DESC, "start"));
         BooleanExpression byOwnerId = QBooking.booking.item.owner.id.eq(booker.getId());
         BooleanExpression byAnyState = createStatePredicate(state);
-        Iterable<Booking> foundBookings = bookingDao.findAll(byOwnerId.and(byAnyState), Sort.by(Sort.Direction.DESC, "start"));
+        Iterable<Booking> foundBookings = bookingDao.findAll(byOwnerId.and(byAnyState), page);
         List<BookingDto> result = BookingMapper.bookingListToDto(foundBookings);
         return result;
     }

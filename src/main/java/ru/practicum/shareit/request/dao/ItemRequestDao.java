@@ -1,8 +1,15 @@
 package ru.practicum.shareit.request.dao;
 
-/**
- * TODO Sprint add-item-requests.
- */
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 
-public interface ItemRequestDao {
+import java.util.List;
+
+public interface ItemRequestDao extends JpaRepository<ItemRequest, Long> {
+
+    List<ItemRequest> findAllByRequesterIdOrderByCreatedDesc(Long requesterId);
+
+    List<ItemRequest> findAllByRequesterIdIsNotOrderByCreatedDesc(Long requesterId, PageRequest page);
+
 }

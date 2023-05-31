@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoSmall;
@@ -9,9 +10,11 @@ import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @Slf4j
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/bookings")
@@ -39,16 +42,20 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> findBookingsByBookerId(@RequestParam(defaultValue = "ALL") BookingState state,
-                                                   @RequestHeader("X-Sharer-User-Id") long userId) {
+                                                   @RequestHeader("X-Sharer-User-Id") long userId,
+                                                   @RequestParam(name = "from", defaultValue = "0") @Min(0) int from,
+                                                   @RequestParam(name = "size", defaultValue = "10") @Min(1) int size) {
         log.info("Получен запрос GET /bookings?state={}", state);
-        return bookingService.findBookingsByBookerId(userId, state);
+        return bookingService.findBookingsByBookerId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findBookingsByOwnerId(@RequestParam(defaultValue = "ALL") BookingState state,
-                                                  @RequestHeader("X-Sharer-User-Id") long userId) {
+                                                  @RequestHeader("X-Sharer-User-Id") long userId,
+                                                  @RequestParam(name = "from", defaultValue = "0") @Min(0) int from,
+                                                  @RequestParam(name = "size", defaultValue = "10") @Min(1) int size) {
         log.info("Получен запрос GET /bookings/owner?state={}", state);
-        return bookingService.findBookingsByOwnerId(userId, state);
+        return bookingService.findBookingsByOwnerId(userId, state, from, size);
     }
 
 }

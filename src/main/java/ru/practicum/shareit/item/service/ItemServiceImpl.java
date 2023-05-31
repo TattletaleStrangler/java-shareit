@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dao.BookingDao;
@@ -8,15 +9,14 @@ import ru.practicum.shareit.booking.dto.BookingDtoForItemDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.exception.ItemNotFoundException;
-import ru.practicum.shareit.exception.NotEnoughRightsException;
-import ru.practicum.shareit.exception.UserNotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.exception.*;
 import ru.practicum.shareit.item.dao.CommentDao;
 import ru.practicum.shareit.item.dao.ItemDao;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dao.ItemRequestDao;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dao.UserDao;
 import ru.practicum.shareit.user.model.User;
 
@@ -38,12 +38,21 @@ public class ItemServiceImpl implements ItemService {
     private final UserDao userDao;
     private final BookingDao bookingDao;
     private final CommentDao commentDao;
+    private final ItemRequestDao itemRequestDao;
 
     @Override
     public ItemDto createItem(ItemDto itemDto, long userId) {
         User user = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
-        Item item = ItemMapper.dtoToItem(itemDto, user);
+
+        Long requestId = itemDto.getRequestId();
+        ItemRequest itemRequest = null;
+        if (requestId != null) {
+            itemRequest = itemRequestDao.findById(requestId)
+                    .orElseThrow(() -> new ItemRequestNotFoundException("Запрос с идентификатором " + requestId + " не найден."));
+        }
+
+        Item item = ItemMapper.dtoToItem(itemDto, user, itemRequest);
         Item savedItem = itemDao.save(item);
         ItemDto savedItemDto = ItemMapper.itemToDto(savedItem);
         return savedItemDto;
@@ -90,8 +99,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoWithBooking> findAllItemsByOwnerId(long userId) {
-        List<Item> items = itemDao.findAllByOwnerIdOrderById(userId);
+    public List<ItemDtoWithBooking> findAllItemsByOwnerId(long userId, int from, int size) {
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        List<Item> items = itemDao.findAllByOwnerIdOrderById(userId, page);
         List<ItemDtoWithBooking> itemDtoWithBookings = new ArrayList<>();
 
         if (items.isEmpty()) {
@@ -138,12 +148,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchByText(String text) {
+    public List<ItemDto> searchByText(String text, int from, int size) {
         if (text.isBlank()) {
             return List.of();
         }
 
-        return itemDao.searchByText(text.toLowerCase()).stream()
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        return itemDao.searchByText(text.toLowerCase(), page).stream()
                 .map(ItemMapper::itemToDto)
                 .collect(toList());
     }

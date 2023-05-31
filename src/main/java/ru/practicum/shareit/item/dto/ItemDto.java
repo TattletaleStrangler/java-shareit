@@ -21,4 +21,5 @@ public class ItemDto {
     @NotNull(message = "Статус предмета не может быть неопределенным.")
     private Boolean available;
 
+    private Long requestId;
 }

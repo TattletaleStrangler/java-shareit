@@ -14,8 +14,8 @@ public interface BookingService {
 
     BookingDto approve(long bookingId, long userId, boolean approved);
 
-    List<BookingDto> findBookingsByBookerId(long userId, BookingState state);
+    List<BookingDto> findBookingsByBookerId(long userId, BookingState state, int from, int size);
 
-    List<BookingDto> findBookingsByOwnerId(long userId, BookingState state);
+    List<BookingDto> findBookingsByOwnerId(long userId, BookingState state, int from, int size);
 
 }

@@ -6,8 +6,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dao.BookingDao;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingDtoSmall;
+import ru.practicum.shareit.booking.dto.GetBookingDto;
+import ru.practicum.shareit.booking.dto.AddBookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
@@ -34,11 +34,11 @@ public class BookingServiceImpl implements BookingService {
     private final ItemDao itemDao;
 
     @Override
-    public BookingDto createBooking(BookingDtoSmall bookingDtoSmall, long userId) {
+    public GetBookingDto createBooking(AddBookingDto addBookingDto, long userId) {
         User booker = userDao.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + userId + " не найден."));
-        Item item = itemDao.findById(bookingDtoSmall.getItemId())
-                .orElseThrow(() -> new ItemNotFoundException("Предмет с идентификатором " + bookingDtoSmall.getItemId() + " не найден."));
+        Item item = itemDao.findById(addBookingDto.getItemId())
+                .orElseThrow(() -> new ItemNotFoundException("Предмет с идентификатором " + addBookingDto.getItemId() + " не найден."));
         if (!item.getAvailable()) {
             throw new ValidationException("Бронирование недоступной вещи запрещено.");
         }
@@ -46,14 +46,14 @@ public class BookingServiceImpl implements BookingService {
             throw new UserNotFoundException("Владелец не может бронировать собственные вещи");
         }
 
-        Booking booking = BookingMapper.dtoSmallToBooking(bookingDtoSmall, booker, item, BookingStatus.WAITING);
+        Booking booking = BookingMapper.addBookingDtoToBooking(addBookingDto, booker, item, BookingStatus.WAITING);
         Booking savedBooking = bookingDao.save(booking);
-        BookingDto bookingDto = BookingMapper.bookingToDto(savedBooking);
-        return bookingDto;
+        GetBookingDto getBookingDto = BookingMapper.bookingToDto(savedBooking);
+        return getBookingDto;
     }
 
     @Override
-    public BookingDto getById(long bookingId, long userId) {
+    public GetBookingDto getById(long bookingId, long userId) {
         Booking booking = bookingDao.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Бронирование с идентификатором " + bookingId + " не найдено."));
         User ownerOrBooker = userDao.findById(userId)
@@ -64,12 +64,12 @@ public class BookingServiceImpl implements BookingService {
             throw new UserNotFoundException("Получать информацию о бронировании может только его автор или владелец вещи.");
         }
 
-        BookingDto bookingDto = BookingMapper.bookingToDto(booking);
-        return bookingDto;
+        GetBookingDto getBookingDto = BookingMapper.bookingToDto(booking);
+        return getBookingDto;
     }
 
     @Override
-    public BookingDto approve(long bookingId, long userId, boolean approved) {
+    public GetBookingDto approve(long bookingId, long userId, boolean approved) {
         Booking booking = bookingDao.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Бронирование с идентификатором " + bookingId + " не найдено."));
 
@@ -93,12 +93,12 @@ public class BookingServiceImpl implements BookingService {
         }
 
         Booking savedBooking = bookingDao.save(booking);
-        BookingDto bookingDto = BookingMapper.bookingToDto(savedBooking);
-        return bookingDto;
+        GetBookingDto getBookingDto = BookingMapper.bookingToDto(savedBooking);
+        return getBookingDto;
     }
 
     @Override
-    public List<BookingDto> findBookingsByBookerId(long bookerId, BookingState state, int from, int size) {
+    public List<GetBookingDto> findBookingsByBookerId(long bookerId, BookingState state, int from, int size) {
         User booker = userDao.findById(bookerId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + bookerId + " не найден."));
 
@@ -106,12 +106,12 @@ public class BookingServiceImpl implements BookingService {
         BooleanExpression byBookerId = QBooking.booking.booker.id.eq(booker.getId());
         BooleanExpression byAnyState = createStatePredicate(state);
         Iterable<Booking> foundBookings = bookingDao.findAll(byBookerId.and(byAnyState), page);
-        List<BookingDto> result = BookingMapper.bookingListToDto(foundBookings);
+        List<GetBookingDto> result = BookingMapper.bookingListToDto(foundBookings);
         return result;
     }
 
     @Override
-    public List<BookingDto> findBookingsByOwnerId(long ownerId, BookingState state, int from, int size) {
+    public List<GetBookingDto> findBookingsByOwnerId(long ownerId, BookingState state, int from, int size) {
         User booker = userDao.findById(ownerId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором = " + ownerId + " не найден."));
 
@@ -119,7 +119,7 @@ public class BookingServiceImpl implements BookingService {
         BooleanExpression byOwnerId = QBooking.booking.item.owner.id.eq(booker.getId());
         BooleanExpression byAnyState = createStatePredicate(state);
         Iterable<Booking> foundBookings = bookingDao.findAll(byOwnerId.and(byAnyState), page);
-        List<BookingDto> result = BookingMapper.bookingListToDto(foundBookings);
+        List<GetBookingDto> result = BookingMapper.bookingListToDto(foundBookings);
         return result;
     }
 

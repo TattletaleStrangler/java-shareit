@@ -19,4 +19,6 @@ public interface ItemService {
     List<ItemDto> searchByText(String text, int from, int size);
 
     CommentDtoResponse addComment(CommentDto commentDto, long userId, long itemId);
+
+    void deleteItem(long itemId);
 }

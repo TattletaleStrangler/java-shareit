@@ -47,8 +47,8 @@ class BookingControllerTest {
         long itemId = 1L;
         long bookingId = 1L;
 
-        LocalDateTime bookingStartDate = LocalDateTime.parse("2023-07-23T17:40:50", dateTimeFormatter);
-        LocalDateTime bookingEndDate = LocalDateTime.parse("2023-07-24T17:40:50", dateTimeFormatter);
+        LocalDateTime bookingStartDate = LocalDateTime.now().plusDays(1);
+        LocalDateTime bookingEndDate = LocalDateTime.now().plusDays(3);
         AddBookingDto addBookingDto = new AddBookingDto(bookingStartDate, bookingEndDate, itemId);
 
         GetBookingDto getBookingDto = GetBookingDto.builder()
@@ -70,8 +70,8 @@ class BookingControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(getBookingDto.getId()), Long.class))
-                .andExpect(jsonPath("$.start", is(getBookingDto.getStart().toString())))
-                .andExpect(jsonPath("$.end", is(getBookingDto.getEnd().toString())))
+                .andExpect(jsonPath("$.start", is(dateTimeFormatter.format(getBookingDto.getStart()))))
+                .andExpect(jsonPath("$.end", is(dateTimeFormatter.format(getBookingDto.getEnd()))))
                 .andExpect(jsonPath("$.booker.id", is(getBookingDto.getBooker().getId()), Long.class))
                 .andExpect(jsonPath("$.item.id", is(getBookingDto.getItem().getId()), Long.class))
                 .andExpect(jsonPath("$.item.name", is(getBookingDto.getItem().getName())));
@@ -87,8 +87,8 @@ class BookingControllerTest {
         long itemId = 1L;
         long bookingId = 1L;
 
-        LocalDateTime bookingStartDate = LocalDateTime.parse("2023-07-23T17:40:50", dateTimeFormatter);
-        LocalDateTime bookingEndDate = LocalDateTime.parse("2023-07-24T17:40:50", dateTimeFormatter);
+        LocalDateTime bookingStartDate = LocalDateTime.now().plusDays(1);
+        LocalDateTime bookingEndDate = LocalDateTime.now().plusDays(5);
         AddBookingDto addBookingDto = new AddBookingDto(bookingStartDate, bookingEndDate, itemId);
 
         GetBookingDto getBookingDto = GetBookingDto.builder()
@@ -175,8 +175,8 @@ class BookingControllerTest {
         long ownerId = 5L;
         long itemId = 1L;
         boolean approved = true;
-        LocalDateTime bookingStartDate = LocalDateTime.parse("2023-07-23T17:40:50", dateTimeFormatter);
-        LocalDateTime bookingEndDate = LocalDateTime.parse("2023-07-24T17:40:50", dateTimeFormatter);
+        LocalDateTime bookingStartDate = LocalDateTime.now().plusDays(1);
+        LocalDateTime bookingEndDate = LocalDateTime.now().plusDays(5);
 
         GetBookingDto getBookingDto = GetBookingDto.builder()
                 .id(bookingId)
@@ -197,8 +197,8 @@ class BookingControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(getBookingDto.getId()), Long.class))
-                .andExpect(jsonPath("$.start", is(getBookingDto.getStart().toString())))
-                .andExpect(jsonPath("$.end", is(getBookingDto.getEnd().toString())))
+                .andExpect(jsonPath("$.start", is(dateTimeFormatter.format(getBookingDto.getStart()))))
+                .andExpect(jsonPath("$.end", is(dateTimeFormatter.format(getBookingDto.getEnd()))))
                 .andExpect(jsonPath("$.booker.id", is(getBookingDto.getBooker().getId()), Long.class))
                 .andExpect(jsonPath("$.item.id", is(getBookingDto.getItem().getId()), Long.class))
                 .andExpect(jsonPath("$.item.name", is(getBookingDto.getItem().getName())));
@@ -214,8 +214,8 @@ class BookingControllerTest {
         long itemId = 1L;
         long bookingId = 1L;
 
-        LocalDateTime bookingStartDate = LocalDateTime.parse("2023-07-23T17:40:50", dateTimeFormatter);
-        LocalDateTime bookingEndDate = LocalDateTime.parse("2023-07-24T17:40:50", dateTimeFormatter);
+        LocalDateTime bookingStartDate = LocalDateTime.now().plusDays(1);
+        LocalDateTime bookingEndDate = LocalDateTime.now().plusDays(5);
 
         GetBookingDto getBookingDto = GetBookingDto.builder()
                 .id(bookingId)
@@ -235,8 +235,8 @@ class BookingControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(getBookingDto.getId()), Long.class))
-                .andExpect(jsonPath("$.start", is(getBookingDto.getStart().toString())))
-                .andExpect(jsonPath("$.end", is(getBookingDto.getEnd().toString())))
+                .andExpect(jsonPath("$.start", is(dateTimeFormatter.format(getBookingDto.getStart()))))
+                .andExpect(jsonPath("$.end", is(dateTimeFormatter.format(getBookingDto.getEnd()))))
                 .andExpect(jsonPath("$.booker.id", is(getBookingDto.getBooker().getId()), Long.class))
                 .andExpect(jsonPath("$.item.id", is(getBookingDto.getItem().getId()), Long.class))
                 .andExpect(jsonPath("$.item.name", is(getBookingDto.getItem().getName())));
@@ -277,10 +277,10 @@ class BookingControllerTest {
         int from = 0;
         int size = 10;
 
-        LocalDateTime bookingStartDate1 = LocalDateTime.parse("2023-07-23T17:40:50", dateTimeFormatter);
-        LocalDateTime bookingEndDate1 = LocalDateTime.parse("2023-07-24T17:40:50", dateTimeFormatter);
-        LocalDateTime bookingStartDate2 = LocalDateTime.parse("2023-08-23T13:41:23", dateTimeFormatter);
-        LocalDateTime bookingEndDate2 = LocalDateTime.parse("2023-08-24T15:41:32", dateTimeFormatter);
+        LocalDateTime bookingStartDate1 = LocalDateTime.now().plusDays(1);
+        LocalDateTime bookingEndDate1 = LocalDateTime.now().plusDays(5);
+        LocalDateTime bookingStartDate2 = LocalDateTime.now().plusDays(10);
+        LocalDateTime bookingEndDate2 = LocalDateTime.now().plusDays(15);
 
         List<GetBookingDto> bookings = List.of(
                 GetBookingDto.builder()
@@ -311,14 +311,14 @@ class BookingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", is(bookings.get(0).getId()), Long.class))
-                .andExpect(jsonPath("$[0].start", is(bookings.get(0).getStart().toString())))
-                .andExpect(jsonPath("$[0].end", is(bookings.get(0).getEnd().toString())))
+                .andExpect(jsonPath("$[0].start", is(dateTimeFormatter.format(bookings.get(0).getStart()))))
+                .andExpect(jsonPath("$[0].end", is(dateTimeFormatter.format(bookings.get(0).getEnd()))))
                 .andExpect(jsonPath("$[0].booker.id", is(bookings.get(0).getBooker().getId()), Long.class))
                 .andExpect(jsonPath("$[0].item.id", is(bookings.get(0).getItem().getId()), Long.class))
                 .andExpect(jsonPath("$[0].item.name", is(bookings.get(0).getItem().getName())))
                 .andExpect(jsonPath("$[1].id", is(bookings.get(1).getId()), Long.class))
-                .andExpect(jsonPath("$[1].start", is(bookings.get(1).getStart().toString())))
-                .andExpect(jsonPath("$[1].end", is(bookings.get(1).getEnd().toString())))
+                .andExpect(jsonPath("$[1].start", is(dateTimeFormatter.format(bookings.get(1).getStart()))))
+                .andExpect(jsonPath("$[1].end", is(dateTimeFormatter.format(bookings.get(1).getEnd()))))
                 .andExpect(jsonPath("$[1].booker.id", is(bookings.get(1).getBooker().getId()), Long.class))
                 .andExpect(jsonPath("$[1].item.id", is(bookings.get(1).getItem().getId()), Long.class))
                 .andExpect(jsonPath("$[1].item.name", is(bookings.get(1).getItem().getName())));
@@ -340,10 +340,10 @@ class BookingControllerTest {
         int from = 0;
         int size = 10;
 
-        LocalDateTime bookingStartDate1 = LocalDateTime.parse("2023-07-23T17:40:50", dateTimeFormatter);
-        LocalDateTime bookingEndDate1 = LocalDateTime.parse("2023-07-24T17:40:50", dateTimeFormatter);
-        LocalDateTime bookingStartDate2 = LocalDateTime.parse("2023-08-23T13:41:23", dateTimeFormatter);
-        LocalDateTime bookingEndDate2 = LocalDateTime.parse("2023-08-24T15:41:32", dateTimeFormatter);
+        LocalDateTime bookingStartDate1 = LocalDateTime.now().plusDays(1);
+        LocalDateTime bookingEndDate1 = LocalDateTime.now().plusDays(5);
+        LocalDateTime bookingStartDate2 = LocalDateTime.now().plusDays(10);
+        LocalDateTime bookingEndDate2 = LocalDateTime.now().plusDays(15);
 
         List<GetBookingDto> bookings = List.of(
                 GetBookingDto.builder()
@@ -374,14 +374,14 @@ class BookingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", is(bookings.get(0).getId()), Long.class))
-                .andExpect(jsonPath("$[0].start", is(bookings.get(0).getStart().toString())))
-                .andExpect(jsonPath("$[0].end", is(bookings.get(0).getEnd().toString())))
+                .andExpect(jsonPath("$[0].start", is(dateTimeFormatter.format(bookings.get(0).getStart()))))
+                .andExpect(jsonPath("$[0].end", is(dateTimeFormatter.format(bookings.get(0).getEnd()))))
                 .andExpect(jsonPath("$[0].booker.id", is(bookings.get(0).getBooker().getId()), Long.class))
                 .andExpect(jsonPath("$[0].item.id", is(bookings.get(0).getItem().getId()), Long.class))
                 .andExpect(jsonPath("$[0].item.name", is(bookings.get(0).getItem().getName())))
                 .andExpect(jsonPath("$[1].id", is(bookings.get(1).getId()), Long.class))
-                .andExpect(jsonPath("$[1].start", is(bookings.get(1).getStart().toString())))
-                .andExpect(jsonPath("$[1].end", is(bookings.get(1).getEnd().toString())))
+                .andExpect(jsonPath("$[1].start", is(dateTimeFormatter.format(bookings.get(1).getStart()))))
+                .andExpect(jsonPath("$[1].end", is(dateTimeFormatter.format(bookings.get(1).getEnd()))))
                 .andExpect(jsonPath("$[1].booker.id", is(bookings.get(1).getBooker().getId()), Long.class))
                 .andExpect(jsonPath("$[1].item.id", is(bookings.get(1).getItem().getId()), Long.class))
                 .andExpect(jsonPath("$[1].item.name", is(bookings.get(1).getItem().getName())));

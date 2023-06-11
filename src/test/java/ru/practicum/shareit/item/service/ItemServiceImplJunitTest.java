@@ -37,12 +37,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ItemServiceImplJunitTest {
 
-    private static final long userId = 1L;
-    private static final long ownerId = 2L;
-    private static final long userId3 = 3L;
-    private static final long itemId = 1L;
-    private static final long bookingId = 1L;
-    private static final long requestId = 1L;
+    private static final long USER_ID = 1L;
+    private static final long OWNER_ID = 2L;
+    private static final long ITEM_ID = 1L;
+    private static final long REQUEST_ID = 1L;
 
     private ItemDto itemDto;
 
@@ -62,79 +60,79 @@ class ItemServiceImplJunitTest {
     @BeforeEach
     void setUp() {
         itemService = new ItemServiceImpl(itemDao, userDao, bookingDao, commentDao, itemRequestDao);
-        itemDto = ItemDto.builder().name("item name").description("description").available(true).requestId(requestId).build();
+        itemDto = ItemDto.builder().name("item name").description("description").available(true).requestId(REQUEST_ID).build();
     }
 
     @Test
     void createItem_whenUserNotFound_thenThrowUserNotFoundException() {
-        when(userDao.findById(userId)).thenReturn(Optional.empty());
+        when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
 
         final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
-                () -> itemService.createItem(itemDto, userId)
+                () -> itemService.createItem(itemDto, USER_ID)
         );
 
-        assertEquals("Пользователь с идентификатором " + userId + " не найден.", exception.getMessage());
+        assertEquals("Пользователь с идентификатором " + USER_ID + " не найден.", exception.getMessage());
     }
 
     @Test
     void createItem_whenRequestNotFound_thenThrowItemRequestNotFoundException() {
         User user = User.builder().build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        when(itemRequestDao.findById(requestId)).thenReturn(Optional.empty());
+        when(itemRequestDao.findById(REQUEST_ID)).thenReturn(Optional.empty());
 
         final ItemRequestNotFoundException exception = assertThrows(
                 ItemRequestNotFoundException.class,
-                () -> itemService.createItem(itemDto, userId)
+                () -> itemService.createItem(itemDto, USER_ID)
         );
 
-        assertEquals("Запрос с идентификатором " + requestId + " не найден.", exception.getMessage());
+        assertEquals("Запрос с идентификатором " + REQUEST_ID + " не найден.", exception.getMessage());
     }
 
     @Test
     void getById_whenUserNotFound_thenThrowUserNotFoundException() {
-        when(userDao.findById(userId)).thenReturn(Optional.empty());
+        when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
 
         final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
-                () -> itemService.getById(itemId, userId)
+                () -> itemService.getById(ITEM_ID, USER_ID)
         );
 
-        assertEquals("Пользователь с идентификатором " + userId + " не найден.", exception.getMessage());
+        assertEquals("Пользователь с идентификатором " + USER_ID + " не найден.", exception.getMessage());
     }
 
     @Test
     void getById_whenItemNotFound_thenThrowItemNotFoundException() {
         User user = User.builder().build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        when(itemDao.findById(itemId)).thenReturn(Optional.empty());
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.empty());
 
         final ItemNotFoundException exception = assertThrows(
                 ItemNotFoundException.class,
-                () -> itemService.getById(itemId, userId)
+                () -> itemService.getById(ITEM_ID, USER_ID)
         );
 
-        assertEquals("Предмет с идентификатором " + itemId + " не найден.", exception.getMessage());
+        assertEquals("Предмет с идентификатором " + ITEM_ID + " не найден.", exception.getMessage());
     }
 
 
     @Test
     void getById_whenUserIsNotOwner() {
         User user = User.builder().build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        User owner = User.builder().id(ownerId).build();
+        User owner = User.builder().id(OWNER_ID).build();
         Item item = ItemMapper.dtoToItem(itemDto, owner, null);
-        item.setId(itemId);
-        when(itemDao.findById(itemId)).thenReturn(Optional.of(item));
+        item.setId(ITEM_ID);
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.of(item));
 
-        when(commentDao.findByItemId(itemId)).thenReturn(List.of());
+        when(commentDao.findByItemId(ITEM_ID)).thenReturn(List.of());
 
-        ItemDtoWithBooking itemDtoWithBooking = itemService.getById(itemId, userId);
+        ItemDtoWithBooking itemDtoWithBooking = itemService.getById(ITEM_ID, USER_ID);
         ItemDtoWithBooking expectedItemDtoWithBooking = ItemDtoWithBooking.builder()
-                .id(itemId)
+                .id(ITEM_ID)
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
@@ -146,44 +144,44 @@ class ItemServiceImplJunitTest {
 
     @Test
     void updateItem_whenUserNotFound_thenThrowUserNotFoundException() {
-        when(userDao.findById(userId)).thenReturn(Optional.empty());
+        when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
 
         final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
-                () -> itemService.updateItem(itemDto, itemId, userId)
+                () -> itemService.updateItem(itemDto, ITEM_ID, USER_ID)
         );
 
-        assertEquals("Пользователь с идентификатором " + userId + " не найден.", exception.getMessage());
+        assertEquals("Пользователь с идентификатором " + USER_ID + " не найден.", exception.getMessage());
     }
 
     @Test
     void updateItem_whenItemNotFound_thenThrowItemNotFoundException() {
         User user = User.builder().build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        when(itemDao.findById(itemId)).thenReturn(Optional.empty());
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.empty());
 
         final ItemNotFoundException exception = assertThrows(
                 ItemNotFoundException.class,
-                () -> itemService.updateItem(itemDto, itemId, userId)
+                () -> itemService.updateItem(itemDto, ITEM_ID, USER_ID)
         );
 
-        assertEquals("Предмет с идентификатором " + itemId + " не найден.", exception.getMessage());
+        assertEquals("Предмет с идентификатором " + ITEM_ID + " не найден.", exception.getMessage());
     }
 
     @Test
     void updateItem_whenUserIsNotOwner() {
-        User user = User.builder().id(userId).build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        User user = User.builder().id(USER_ID).build();
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        User owner = User.builder().id(ownerId).build();
+        User owner = User.builder().id(OWNER_ID).build();
         Item item = ItemMapper.dtoToItem(itemDto, owner, null);
-        item.setId(itemId);
-        when(itemDao.findById(itemId)).thenReturn(Optional.of(item));
+        item.setId(ITEM_ID);
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.of(item));
 
         final NotEnoughRightsException exception = assertThrows(
                 NotEnoughRightsException.class,
-                () -> itemService.updateItem(itemDto, itemId, userId)
+                () -> itemService.updateItem(itemDto, ITEM_ID, USER_ID)
         );
 
         assertEquals("Пользователь не может редактировать чужие предметы.", exception.getMessage());
@@ -191,103 +189,103 @@ class ItemServiceImplJunitTest {
 
     @Test
     void updateItem_whenNewNameIsNull() {
-        User user = User.builder().id(userId).build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        User user = User.builder().id(USER_ID).build();
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        User owner = User.builder().id(userId).build();
+        User owner = User.builder().id(USER_ID).build();
         Item item = ItemMapper.dtoToItem(itemDto, owner, null);
-        item.setId(itemId);
-        when(itemDao.findById(itemId)).thenReturn(Optional.of(item));
+        item.setId(ITEM_ID);
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.of(item));
 
         when(itemDao.save(any(Item.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ItemDto newItemDto = ItemDto.builder().name(null).build();
-        ItemDto savedItemDto = itemService.updateItem(newItemDto, itemId, userId);
+        ItemDto savedItemDto = itemService.updateItem(newItemDto, ITEM_ID, USER_ID);
         assertThat(savedItemDto.getName(), equalTo(itemDto.getName()));
     }
 
     @Test
     void updateItem_whenNewNameIsBlank() {
-        User user = User.builder().id(userId).build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        User user = User.builder().id(USER_ID).build();
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        User owner = User.builder().id(userId).build();
+        User owner = User.builder().id(USER_ID).build();
         Item item = ItemMapper.dtoToItem(itemDto, owner, null);
-        item.setId(itemId);
-        when(itemDao.findById(itemId)).thenReturn(Optional.of(item));
+        item.setId(ITEM_ID);
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.of(item));
 
         when(itemDao.save(any(Item.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ItemDto newItemDto = ItemDto.builder().name("").build();
-        ItemDto savedItemDto = itemService.updateItem(newItemDto, itemId, userId);
+        ItemDto savedItemDto = itemService.updateItem(newItemDto, ITEM_ID, USER_ID);
         assertThat(savedItemDto.getName(), equalTo(itemDto.getName()));
     }
 
     @Test
     void updateItem_whenNewDescriptionIsNull() {
-        User user = User.builder().id(userId).build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        User user = User.builder().id(USER_ID).build();
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        User owner = User.builder().id(userId).build();
+        User owner = User.builder().id(USER_ID).build();
         Item item = ItemMapper.dtoToItem(itemDto, owner, null);
-        item.setId(itemId);
-        when(itemDao.findById(itemId)).thenReturn(Optional.of(item));
+        item.setId(ITEM_ID);
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.of(item));
 
         when(itemDao.save(any(Item.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ItemDto newItemDto = ItemDto.builder().description(null).build();
-        ItemDto savedItemDto = itemService.updateItem(newItemDto, itemId, userId);
+        ItemDto savedItemDto = itemService.updateItem(newItemDto, ITEM_ID, USER_ID);
         assertThat(savedItemDto.getDescription(), equalTo(itemDto.getDescription()));
     }
 
     @Test
     void updateItem_whenNewDescriptionIsBlank() {
-        User user = User.builder().id(userId).build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        User user = User.builder().id(USER_ID).build();
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        User owner = User.builder().id(userId).build();
+        User owner = User.builder().id(USER_ID).build();
         Item item = ItemMapper.dtoToItem(itemDto, owner, null);
-        item.setId(itemId);
-        when(itemDao.findById(itemId)).thenReturn(Optional.of(item));
+        item.setId(ITEM_ID);
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.of(item));
 
         when(itemDao.save(any(Item.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ItemDto newItemDto = ItemDto.builder().description("").build();
-        ItemDto savedItemDto = itemService.updateItem(newItemDto, itemId, userId);
+        ItemDto savedItemDto = itemService.updateItem(newItemDto, ITEM_ID, USER_ID);
         assertThat(savedItemDto.getDescription(), equalTo(itemDto.getDescription()));
     }
 
     @Test
     void updateItem_whenNewDescriptionIsNotBlank() {
-        User user = User.builder().id(userId).build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        User user = User.builder().id(USER_ID).build();
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        User owner = User.builder().id(userId).build();
+        User owner = User.builder().id(USER_ID).build();
         Item item = ItemMapper.dtoToItem(itemDto, owner, null);
-        item.setId(itemId);
-        when(itemDao.findById(itemId)).thenReturn(Optional.of(item));
+        item.setId(ITEM_ID);
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.of(item));
 
         when(itemDao.save(any(Item.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ItemDto newItemDto = ItemDto.builder().description("new description").build();
-        ItemDto savedItemDto = itemService.updateItem(newItemDto, itemId, userId);
+        ItemDto savedItemDto = itemService.updateItem(newItemDto, ITEM_ID, USER_ID);
         assertThat(savedItemDto.getDescription(), equalTo(newItemDto.getDescription()));
     }
 
     @Test
     void updateItem_whenNewAvailableIsNotNull() {
-        User user = User.builder().id(userId).build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        User user = User.builder().id(USER_ID).build();
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        User owner = User.builder().id(userId).build();
+        User owner = User.builder().id(USER_ID).build();
         Item item = ItemMapper.dtoToItem(itemDto, owner, null);
-        item.setId(itemId);
-        when(itemDao.findById(itemId)).thenReturn(Optional.of(item));
+        item.setId(ITEM_ID);
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.of(item));
 
         when(itemDao.save(any(Item.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ItemDto newItemDto = ItemDto.builder().available(true).build();
-        ItemDto savedItemDto = itemService.updateItem(newItemDto, itemId, userId);
+        ItemDto savedItemDto = itemService.updateItem(newItemDto, ITEM_ID, USER_ID);
         assertThat(savedItemDto.getAvailable(), equalTo(newItemDto.getAvailable()));
     }
 
@@ -296,7 +294,7 @@ class ItemServiceImplJunitTest {
         when(itemDao.findAllByOwnerIdOrderById(anyLong(), any()))
                 .thenReturn(List.of());
 
-        List<ItemDtoWithBooking> itemDtoList = itemService.findAllItemsByOwnerId(userId, 0, 10);
+        List<ItemDtoWithBooking> itemDtoList = itemService.findAllItemsByOwnerId(USER_ID, 0, 10);
         assertTrue(itemDtoList.isEmpty());
     }
 
@@ -307,7 +305,7 @@ class ItemServiceImplJunitTest {
 
         int size = 1;
         int from = size + 1;
-        List<ItemDtoWithBooking> itemDtoList = itemService.findAllItemsByOwnerId(userId, from, size);
+        List<ItemDtoWithBooking> itemDtoList = itemService.findAllItemsByOwnerId(USER_ID, from, size);
         assertTrue(itemDtoList.isEmpty());
     }
 
@@ -336,37 +334,37 @@ class ItemServiceImplJunitTest {
 
     @Test
     void addComment_whenUserNotFound_thenThrowUserNotFoundException() {
-        when(itemDao.findById(itemId)).thenReturn(Optional.of(Item.builder().build()));
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.of(Item.builder().build()));
 
-        when(userDao.findById(userId)).thenReturn(Optional.empty());
+        when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
 
         CommentDto commentDto = new CommentDto("comment text");
         final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
-                () -> itemService.addComment(commentDto, userId, itemId)
+                () -> itemService.addComment(commentDto, USER_ID, ITEM_ID)
         );
 
-        assertEquals("Пользователь с идентификатором " + userId + " не найден.", exception.getMessage());
+        assertEquals("Пользователь с идентификатором " + USER_ID + " не найден.", exception.getMessage());
     }
 
     @Test
     void addComment_whenItemNotFound_thenThrowItemNotFoundException() {
-        when(itemDao.findById(itemId)).thenReturn(Optional.empty());
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.empty());
 
         CommentDto commentDto = new CommentDto("comment text");
         final ItemNotFoundException exception = assertThrows(
                 ItemNotFoundException.class,
-                () -> itemService.addComment(commentDto, userId, itemId)
+                () -> itemService.addComment(commentDto, USER_ID, ITEM_ID)
         );
 
-        assertEquals("Предмет с идентификатором " + itemId + " не найден.", exception.getMessage());
+        assertEquals("Предмет с идентификатором " + ITEM_ID + " не найден.", exception.getMessage());
     }
 
     @Test
     void addComment_whenUserIsNotBooker_thenValidationException() {
-        when(itemDao.findById(itemId)).thenReturn(Optional.of(Item.builder().build()));
+        when(itemDao.findById(ITEM_ID)).thenReturn(Optional.of(Item.builder().build()));
 
-        when(userDao.findById(userId)).thenReturn(Optional.of(User.builder().build()));
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(User.builder().build()));
 
         when(bookingDao.existsByItemIdAndBookerIdAndStatusAndEndLessThan(anyLong(), anyLong(), any(BookingStatus.class),
                 any(LocalDateTime.class)))
@@ -375,7 +373,7 @@ class ItemServiceImplJunitTest {
         CommentDto commentDto = new CommentDto("comment text");
         final ValidationException exception = assertThrows(
                 ValidationException.class,
-                () -> itemService.addComment(commentDto, userId, itemId)
+                () -> itemService.addComment(commentDto, USER_ID, ITEM_ID)
         );
 
         assertEquals("Добавлять комментарий к вещи может только пользователь, арендовавший её ранее.", exception.getMessage());

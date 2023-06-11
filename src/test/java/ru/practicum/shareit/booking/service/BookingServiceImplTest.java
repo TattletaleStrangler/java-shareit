@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.practicum.shareit.booking.dao.BookingDao;
 import ru.practicum.shareit.booking.dto.AddBookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.GetBookingDto;
@@ -30,7 +29,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -46,8 +44,6 @@ import static org.hamcrest.Matchers.hasSize;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class BookingServiceImplTest {
-
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     private final EntityManager em;
 
@@ -71,7 +67,6 @@ class BookingServiceImplTest {
     private static final long COMMENT_ID1 = 1;
     private static final long COMMENT_ID2 = 2;
     private static final long COMMENT_ID3 = 3;
-
     private static final long REQUEST_ID1 = 1;
     private static final long REQUEST_ID2 = 2;
     private static final long REQUEST_ID3 = 3;
@@ -98,8 +93,6 @@ class BookingServiceImplTest {
     private ItemRequest itemRequest1;
     private ItemRequest itemRequest2;
     private ItemRequest itemRequest3;
-
-    private final BookingDao bookingDao;
 
     @BeforeEach
     void setUp() {
@@ -250,21 +243,21 @@ class BookingServiceImplTest {
         booking6.setId(BOOKING_ID6);
         em.flush();
 
-        LocalDateTime commentDate = LocalDateTime.parse("2023-06-04T18:00:00", dateTimeFormatter);
+        LocalDateTime commentDate = LocalDateTime.now().minusDays(5);
         String commentText = "Комментарий 1";
         CommentDto commentDto = new CommentDto(commentText);
         comment1 = ItemMapper.dtoToComment(commentDto, item1, requester1, commentDate);
         em.persist(comment1);
         comment1.setId(COMMENT_ID1);
 
-        LocalDateTime commentDate2 = LocalDateTime.parse("2023-07-04T18:00:00", dateTimeFormatter);
+        LocalDateTime commentDate2 = LocalDateTime.now().minusDays(4);
         String commentText2 = "Комментарий 2";
         CommentDto commentDto2 = new CommentDto(commentText2);
         comment2 = ItemMapper.dtoToComment(commentDto2, item2, requester2, commentDate2);
         em.persist(comment2);
         comment2.setId(COMMENT_ID2);
 
-        LocalDateTime commentDate3 = LocalDateTime.parse("2023-10-04T18:00:00", dateTimeFormatter);
+        LocalDateTime commentDate3 = LocalDateTime.now().minusDays(3);
         String commentText3 = "Комментарий 3";
         CommentDto commentDto3 = new CommentDto(commentText3);
         comment3 = ItemMapper.dtoToComment(commentDto3, item2, requester1, commentDate3);
@@ -274,21 +267,24 @@ class BookingServiceImplTest {
 
     @Test
     void createBooking() {
-        LocalDateTime bookingStartDate = LocalDateTime.parse("2023-07-23T17:40:50", dateTimeFormatter);
-        LocalDateTime bookingEndDate = LocalDateTime.parse("2023-07-24T17:40:50", dateTimeFormatter);
+        LocalDateTime bookingStartDate = LocalDateTime.now().plusDays(10);
+        LocalDateTime bookingEndDate = LocalDateTime.now().plusDays(15);
         AddBookingDto addBookingDto = new AddBookingDto(bookingStartDate, bookingEndDate, ITEM_ID1);
 
-        GetBookingDto bookingDto = bookingService.createBooking(addBookingDto, BOOKER_ID1);
+        long bookingId = 7L;
+        bookingService.createBooking(addBookingDto, BOOKER_ID1);
 
-        assertThat(bookingDto, notNullValue());
-        assertThat(bookingDto.getId(), equalTo(7L));
-        assertThat(bookingDto.getStart(), equalTo(bookingStartDate));
-        assertThat(bookingDto.getEnd(), equalTo(bookingEndDate));
-        assertThat(bookingDto.getStatus(), equalTo(BookingStatus.WAITING));
-        assertThat(bookingDto.getItem().getId(), equalTo(item1.getId()));
-        assertThat(bookingDto.getItem().getName(), equalTo(item1.getName()));
-        assertThat(bookingDto.getBooker().getId(), equalTo(booker1.getId()));
+        TypedQuery<Booking> query = em.createQuery("Select b from Booking b where b.id = :id", Booking.class);
+        Booking approvedBooking = query.setParameter("id", bookingId).getSingleResult();
 
+        assertThat(approvedBooking, notNullValue());
+        assertThat(approvedBooking.getId(), equalTo(bookingId));
+        assertThat(approvedBooking.getStart(), equalTo(bookingStartDate));
+        assertThat(approvedBooking.getEnd(), equalTo(bookingEndDate));
+        assertThat(approvedBooking.getStatus(), equalTo(BookingStatus.WAITING));
+        assertThat(approvedBooking.getItem().getId(), equalTo(item1.getId()));
+        assertThat(approvedBooking.getItem().getName(), equalTo(item1.getName()));
+        assertThat(approvedBooking.getBooker().getId(), equalTo(booker1.getId()));
     }
 
     @Test

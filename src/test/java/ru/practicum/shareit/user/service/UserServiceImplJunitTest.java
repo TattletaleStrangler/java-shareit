@@ -25,8 +25,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplJunitTest {
 
-    private static final long userId = 1L;
-    private final UserDto userDto = UserDto.builder().id(userId).name("name").email("email").build();
+    private static final long USER_ID = 1L;
+    private final UserDto userDto = UserDto.builder().id(USER_ID).name("name").email("email").build();
     private final User user = UserMapper.dtoToUser(userDto);
     @Mock
     UserDao userDao;
@@ -41,37 +41,37 @@ class UserServiceImplJunitTest {
 
     @Test
     void getById() {
-        when(userDao.findById(userId)).thenReturn(Optional.empty());
+        when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
 
         final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
-                () -> userService.getById(userId)
+                () -> userService.getById(USER_ID)
         );
 
-        assertEquals("Пользователь с идентификатором = " + userId + " не найден.", exception.getMessage());
+        assertEquals("Пользователь с идентификатором = " + USER_ID + " не найден.", exception.getMessage());
 
     }
 
     @Test
     void updateUser_whenUserNotFound_thenUserNotFoundException() {
-        when(userDao.findById(userId)).thenReturn(Optional.empty());
+        when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
 
         final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
-                () -> userService.updateUser(userDto, userId)
+                () -> userService.updateUser(userDto, USER_ID)
         );
 
-        assertEquals("Пользователь с идентификатором = " + userId + " не найден.", exception.getMessage());
+        assertEquals("Пользователь с идентификатором = " + USER_ID + " не найден.", exception.getMessage());
     }
 
     @Test
     void updateUser_whenNewNameIsNull() {
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
         when(userDao.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UserDto newUserDto = UserDto.builder().id(userId).name(null).email("new email").build();
+        UserDto newUserDto = UserDto.builder().id(USER_ID).name(null).email("new email").build();
 
-        UserDto savedUserDto = userService.updateUser(newUserDto, userId);
+        UserDto savedUserDto = userService.updateUser(newUserDto, USER_ID);
         assertThat(savedUserDto.getId(), equalTo(user.getId()));
         assertThat(savedUserDto.getName(), equalTo(user.getName()));
         assertThat(savedUserDto.getEmail(), equalTo(newUserDto.getEmail()));
@@ -79,12 +79,12 @@ class UserServiceImplJunitTest {
 
     @Test
     void updateUser_whenNewNameIsBlank() {
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
         when(userDao.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UserDto newUserDto = UserDto.builder().id(userId).name("").email("new email").build();
+        UserDto newUserDto = UserDto.builder().id(USER_ID).name("").email("new email").build();
 
-        UserDto savedUserDto = userService.updateUser(newUserDto, userId);
+        UserDto savedUserDto = userService.updateUser(newUserDto, USER_ID);
         assertThat(savedUserDto.getId(), equalTo(user.getId()));
         assertThat(savedUserDto.getName(), equalTo(user.getName()));
         assertThat(savedUserDto.getEmail(), equalTo(newUserDto.getEmail()));
@@ -92,12 +92,12 @@ class UserServiceImplJunitTest {
 
     @Test
     void updateUser_whenNewEmailIsNull() {
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
         when(userDao.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UserDto newUserDto = UserDto.builder().id(userId).name("new name").email(null).build();
+        UserDto newUserDto = UserDto.builder().id(USER_ID).name("new name").email(null).build();
 
-        UserDto savedUserDto = userService.updateUser(newUserDto, userId);
+        UserDto savedUserDto = userService.updateUser(newUserDto, USER_ID);
         assertThat(savedUserDto.getId(), equalTo(user.getId()));
         assertThat(savedUserDto.getName(), equalTo(newUserDto.getName()));
         assertThat(savedUserDto.getEmail(), equalTo(user.getEmail()));
@@ -105,12 +105,12 @@ class UserServiceImplJunitTest {
 
     @Test
     void updateUser_whenNewEmailIsBlank() {
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
         when(userDao.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UserDto newUserDto = UserDto.builder().id(userId).name("new name").email("").build();
+        UserDto newUserDto = UserDto.builder().id(USER_ID).name("new name").email("").build();
 
-        UserDto savedUserDto = userService.updateUser(newUserDto, userId);
+        UserDto savedUserDto = userService.updateUser(newUserDto, USER_ID);
         assertThat(savedUserDto.getId(), equalTo(user.getId()));
         assertThat(savedUserDto.getName(), equalTo(newUserDto.getName()));
         assertThat(savedUserDto.getEmail(), equalTo(user.getEmail()));

@@ -19,11 +19,9 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.AddItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -51,8 +49,6 @@ class ItemServiceImplTest {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private final EntityManager em;
     private final ItemService itemService;
-    private final ItemRequestService itemRequestService;
-    private final UserService userService;
 
     @Test
     void createItem() {

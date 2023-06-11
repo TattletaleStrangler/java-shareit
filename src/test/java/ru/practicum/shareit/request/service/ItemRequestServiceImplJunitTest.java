@@ -24,12 +24,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ItemRequestServiceImplJunitTest {
 
-    private static final long userId = 1L;
-    private static final long ownerId = 2L;
-    private static final long userId3 = 3L;
-    private static final long itemId = 1L;
-    private static final long bookingId = 1L;
-    private static final long requestId = 1L;
+    private static final long USER_ID = 1L;
+    private static final long REQUEST_ID = 1L;
 
     private AddItemRequestDto addItemRequestDto;
 
@@ -50,83 +46,83 @@ class ItemRequestServiceImplJunitTest {
 
     @Test
     void createItemRequest_whenUserNotExists_thenThrowException() {
-        when(userDao.findById(userId)).thenReturn(Optional.empty());
+        when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
 
         final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
-                () -> itemRequestService.createItemRequest(addItemRequestDto, userId)
+                () -> itemRequestService.createItemRequest(addItemRequestDto, USER_ID)
         );
 
-        assertEquals("Пользователь с идентификатором " + userId + " не найден.", exception.getMessage());
+        assertEquals("Пользователь с идентификатором " + USER_ID + " не найден.", exception.getMessage());
         Mockito.verify(userDao, Mockito.times(1))
-                .findById(userId);
+                .findById(USER_ID);
         Mockito.verifyNoMoreInteractions(userDao);
     }
 
     @Test
     void findAllByRequesterId_whenUserNotExists_thenThrowException() {
-        when(userDao.findById(userId)).thenReturn(Optional.empty());
+        when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
 
         final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
-                () -> itemRequestService.findAllByRequesterId(userId)
+                () -> itemRequestService.findAllByRequesterId(USER_ID)
         );
 
-        assertEquals("Пользователь с идентификатором " + userId + " не найден.", exception.getMessage());
+        assertEquals("Пользователь с идентификатором " + USER_ID + " не найден.", exception.getMessage());
         Mockito.verify(userDao, Mockito.times(1))
-                .findById(userId);
+                .findById(USER_ID);
         Mockito.verifyNoMoreInteractions(userDao);
     }
 
     @Test
     void findAll_whenUserNotExists_thenThrowException() {
-        when(userDao.findById(userId)).thenReturn(Optional.empty());
+        when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
 
         int from = 0;
         int size = 10;
         final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
-                () -> itemRequestService.findAll(userId, from, size)
+                () -> itemRequestService.findAll(USER_ID, from, size)
         );
 
-        assertEquals("Пользователь с идентификатором " + userId + " не найден.", exception.getMessage());
+        assertEquals("Пользователь с идентификатором " + USER_ID + " не найден.", exception.getMessage());
         Mockito.verify(userDao, Mockito.times(1))
-                .findById(userId);
+                .findById(USER_ID);
         Mockito.verifyNoMoreInteractions(userDao);
     }
 
     @Test
     void getById_whenUserNotExists_thenThrowException() {
-        when(userDao.findById(userId)).thenReturn(Optional.empty());
+        when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
 
         final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
-                () -> itemRequestService.getById(requestId, userId)
+                () -> itemRequestService.getById(REQUEST_ID, USER_ID)
         );
 
-        assertEquals("Пользователь с идентификатором " + userId + " не найден.", exception.getMessage());
+        assertEquals("Пользователь с идентификатором " + USER_ID + " не найден.", exception.getMessage());
         Mockito.verify(userDao, Mockito.times(1))
-                .findById(userId);
+                .findById(USER_ID);
         Mockito.verifyNoMoreInteractions(userDao);
     }
 
     @Test
     void getById_whenItemRequestNotExists_thenThrowException() {
         User user = User.builder().build();
-        when(userDao.findById(userId)).thenReturn(Optional.of(user));
+        when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
 
-        when(itemRequestDao.findById(requestId)).thenReturn(Optional.empty());
+        when(itemRequestDao.findById(REQUEST_ID)).thenReturn(Optional.empty());
 
         final UserNotFoundException exception = assertThrows(
                 UserNotFoundException.class,
-                () -> itemRequestService.getById(requestId, userId)
+                () -> itemRequestService.getById(REQUEST_ID, USER_ID)
         );
 
-        assertEquals("Запрос с идентификатором " + requestId + " не найден.", exception.getMessage());
+        assertEquals("Запрос с идентификатором " + REQUEST_ID + " не найден.", exception.getMessage());
         Mockito.verify(userDao, Mockito.times(1))
-                .findById(userId);
+                .findById(USER_ID);
         Mockito.verify(itemRequestDao, Mockito.times(1))
-                .findById(requestId);
+                .findById(REQUEST_ID);
         Mockito.verifyNoMoreInteractions(userDao);
         Mockito.verifyNoMoreInteractions(itemRequestDao);
     }

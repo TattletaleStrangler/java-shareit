@@ -223,8 +223,8 @@ class ItemControllerTest {
         long userId = 5L;
         long bookerId = 3L;
         long itemId = 1L;
-        LocalDateTime firstCommentDate = LocalDateTime.parse("2023-06-04T18:00:00", dateTimeFormatter);
-        LocalDateTime secondCommentDate = LocalDateTime.parse("2023-05-15T07:00:50", dateTimeFormatter);
+        LocalDateTime firstCommentDate = LocalDateTime.now().minusDays(20);
+        LocalDateTime secondCommentDate = LocalDateTime.now().minusDays(10);
 
         List<CommentDtoResponse> comments = List.of(
                 CommentDtoResponse.builder()
@@ -240,8 +240,8 @@ class ItemControllerTest {
                         .created(secondCommentDate)
                         .build());
 
-        LocalDateTime lastBookingStartDate = LocalDateTime.parse("2023-04-23T17:40:50", dateTimeFormatter);
-        LocalDateTime lastBookingEndDate = LocalDateTime.parse("2023-04-24T17:40:50", dateTimeFormatter);
+        LocalDateTime lastBookingStartDate = LocalDateTime.now().minusDays(30);
+        LocalDateTime lastBookingEndDate = LocalDateTime.now().minusDays(25);
 
         BookingDtoForItemDto lastBooking = BookingDtoForItemDto.builder()
                 .id(1L)
@@ -318,8 +318,8 @@ class ItemControllerTest {
         long userId = 5L;
         long bookerId = 3L;
         long itemId = 1L;
-        LocalDateTime firstCommentDate = LocalDateTime.parse("2023-06-04T18:00:00", dateTimeFormatter);
-        LocalDateTime secondCommentDate = LocalDateTime.parse("2023-05-15T07:00:50", dateTimeFormatter);
+        LocalDateTime firstCommentDate = LocalDateTime.now().minusDays(10);
+        LocalDateTime secondCommentDate = LocalDateTime.now().minusDays(5);
 
         List<CommentDtoResponse> comments = List.of(
                 CommentDtoResponse.builder()
@@ -335,8 +335,8 @@ class ItemControllerTest {
                         .created(secondCommentDate)
                         .build());
 
-        LocalDateTime lastBookingStartDate = LocalDateTime.parse("2023-04-23T17:40:50", dateTimeFormatter);
-        LocalDateTime lastBookingEndDate = LocalDateTime.parse("2023-04-24T17:40:50", dateTimeFormatter);
+        LocalDateTime lastBookingStartDate = LocalDateTime.now().minusDays(20);
+        LocalDateTime lastBookingEndDate = LocalDateTime.now().minusDays(15);
 
         BookingDtoForItemDto lastBooking = BookingDtoForItemDto.builder()
                 .id(1L)
@@ -448,7 +448,7 @@ class ItemControllerTest {
     @Test
     void addComment() throws Exception {
         CommentDto commentDto = new CommentDto("Комментарий");
-        LocalDateTime created = LocalDateTime.parse("2023-06-04T20:20:20", dateTimeFormatter);
+        LocalDateTime created = LocalDateTime.now().minusDays(10);
         CommentDtoResponse commentDtoResponse = CommentDtoResponse.builder()
                 .id(7L)
                 .text("Комментарий")

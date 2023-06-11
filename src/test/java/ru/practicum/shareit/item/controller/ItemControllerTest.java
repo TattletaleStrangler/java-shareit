@@ -19,6 +19,7 @@ import ru.practicum.shareit.item.service.ItemService;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -223,8 +224,8 @@ class ItemControllerTest {
         long userId = 5L;
         long bookerId = 3L;
         long itemId = 1L;
-        LocalDateTime firstCommentDate = LocalDateTime.now().minusDays(20);
-        LocalDateTime secondCommentDate = LocalDateTime.now().minusDays(10);
+        LocalDateTime firstCommentDate = LocalDateTime.now().minusDays(20).truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime secondCommentDate = LocalDateTime.now().minusDays(10).truncatedTo(ChronoUnit.SECONDS);
 
         List<CommentDtoResponse> comments = List.of(
                 CommentDtoResponse.builder()
@@ -282,11 +283,11 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.comments[0].id", is(comments.get(0).getId()), Long.class))
                 .andExpect(jsonPath("$.comments[0].text", is(comments.get(0).getText())))
                 .andExpect(jsonPath("$.comments[0].authorName", is(comments.get(0).getAuthorName())))
-                .andExpect(jsonPath("$.comments[0].created", is(dateTimeFormatter.format(firstCommentDate))))
+                .andExpect(jsonPath("$.comments[0].created", is(firstCommentDate.toString())))
                 .andExpect(jsonPath("$.comments[1].id", is(comments.get(1).getId()), Long.class))
                 .andExpect(jsonPath("$.comments[1].text", is(comments.get(1).getText())))
                 .andExpect(jsonPath("$.comments[1].authorName", is(comments.get(1).getAuthorName())))
-                .andExpect(jsonPath("$.comments[1].created", is(dateTimeFormatter.format(secondCommentDate))));
+                .andExpect(jsonPath("$.comments[1].created", is(secondCommentDate.toString())));
 
         Mockito.verify(itemService, Mockito.times(1))
                 .getById(itemId, userId);
@@ -318,8 +319,8 @@ class ItemControllerTest {
         long userId = 5L;
         long bookerId = 3L;
         long itemId = 1L;
-        LocalDateTime firstCommentDate = LocalDateTime.now().minusDays(10);
-        LocalDateTime secondCommentDate = LocalDateTime.now().minusDays(5);
+        LocalDateTime firstCommentDate = LocalDateTime.now().minusDays(10).truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime secondCommentDate = LocalDateTime.now().minusDays(5).truncatedTo(ChronoUnit.SECONDS);
 
         List<CommentDtoResponse> comments = List.of(
                 CommentDtoResponse.builder()
@@ -448,7 +449,7 @@ class ItemControllerTest {
     @Test
     void addComment() throws Exception {
         CommentDto commentDto = new CommentDto("Комментарий");
-        LocalDateTime created = LocalDateTime.now().minusDays(10);
+        LocalDateTime created = LocalDateTime.now().minusDays(10).truncatedTo(ChronoUnit.SECONDS);
         CommentDtoResponse commentDtoResponse = CommentDtoResponse.builder()
                 .id(7L)
                 .text("Комментарий")

@@ -42,8 +42,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(ItemDto itemDto, long userId) {
-        User user = userDao.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
+        User user = checkUserAndGet(userId);
 
         Long requestId = itemDto.getRequestId();
         ItemRequest itemRequest = null;
@@ -60,10 +59,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoWithBooking getById(long itemId, long userId) {
-        User user = userDao.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
-        Item item = itemDao.findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Предмет с идентификатором " + itemId + " не найден."));
+        User user = checkUserAndGet(userId);
+        Item item = checkItemAndGet(itemId);
 
         ItemDtoWithBooking itemDtoWithBooking;
         if (item.getOwner().getId().equals(user.getId())) {
@@ -85,10 +82,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto updateItem(ItemDto itemDto, long itemId, long userId) {
-        User user = userDao.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
-        Item oldItem = itemDao.findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Предмет с идентификатором " + itemId + " не найден."));
+        User user = checkUserAndGet(userId);
+        Item oldItem = checkItemAndGet(itemId);
 
         if (!user.equals(oldItem.getOwner())) {
             throw new NotEnoughRightsException("Пользователь не может редактировать чужие предметы.");
@@ -161,10 +156,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public CommentDtoResponse addComment(CommentDto commentDto, long userId, long itemId) {
-        Item item = itemDao.findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException("Предмет с идентификатором " + itemId + " не найден."));
-        User user = userDao.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
+        Item item = checkItemAndGet(itemId);
+        User user = checkUserAndGet(userId);
 
         if (!bookingDao.existsByItemIdAndBookerIdAndStatusAndEndLessThan(itemId, userId, BookingStatus.APPROVED,
                 LocalDateTime.now())) {
@@ -175,6 +168,16 @@ public class ItemServiceImpl implements ItemService {
         Comment savedComment = commentDao.save(comment);
         CommentDtoResponse savedCommetDto = ItemMapper.commentDtoResponse(savedComment);
         return savedCommetDto;
+    }
+
+    private User checkUserAndGet(long userId) {
+        return userDao.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
+    }
+
+    private Item checkItemAndGet(long itemId) {
+        return itemDao.findById(itemId)
+                .orElseThrow(() -> new ItemNotFoundException("Предмет с идентификатором " + itemId + " не найден."));
     }
 
     private void updateItem(ItemDto newItem, Item oldItem) {

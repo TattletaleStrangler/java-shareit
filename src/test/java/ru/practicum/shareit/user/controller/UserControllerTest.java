@@ -59,19 +59,11 @@ class UserControllerTest {
     }
 
     @Test
-    void whenSaveUserWithWrongEmail_thenStatusIsBadRequest() throws Exception {
-        UserDto userDto1 = UserDto.builder().name("Alfredo").build();
-        UserDto userDto2 = UserDto.builder().name("Alfredo").email(" ").build();
+    void whenSaveUserWithBlankEmail_thenStatusIsBadRequest() throws Exception {
+        UserDto userDto = UserDto.builder().name("Alfredo").email(" ").build();
 
         mvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto1))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(in(List.of(400, 500))));
-
-        mvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto2))
+                        .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -81,19 +73,83 @@ class UserControllerTest {
     }
 
     @Test
-    void whenSaveUserWithWrongName_thenStatusIsBadRequest() throws Exception {
-        UserDto userDto1 = UserDto.builder().email("Alfredo@mail.com").build();
-        UserDto userDto2 = UserDto.builder().name(" ").email("Alfredo@mail.com").build();
+    void whenSaveUserWithNullEmail_thenStatusIsBadRequest() throws Exception {
+        UserDto userDto = UserDto.builder().name("Alfredo").build();
 
         mvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto1))
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(in(List.of(400, 500))));
+
+        Mockito.verifyNoInteractions(userService);
+    }
+
+    @Test
+    void whenSaveUserWith75SymbolsEmail_thenStatusIsBadRequest() throws Exception {
+        UserDto userDto = UserDto.builder()
+                .name("Alfredo")
+                .email("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop" +
+                        "123456789012345@gmail.com")
+                .build();
+
+        mvc.perform(post("/users")
+                        .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
+        Mockito.verifyNoInteractions(userService);
+    }
+
+    @Test
+    void whenSaveNewUserWith74SymbolsEmail_thenStatusIsOk() throws Exception {
+        UserDto userDto = UserDto.builder()
+                .name("Alfredo")
+                .email("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop" +
+                        "12345678901234@gmail.com")
+                .build();
+
+        when(userService.createUser(userDto))
+                .thenReturn(userDto);
+
         mvc.perform(post("/users")
-                        .content(mapper.writeValueAsString(userDto2))
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(userDto.getId()), Long.class))
+                .andExpect(jsonPath("$.name", is(userDto.getName())))
+                .andExpect(jsonPath("$.email", is(userDto.getEmail())));
+
+        Mockito.verify(userService, Mockito.times(1))
+                .createUser(userDto);
+        Mockito.verifyNoMoreInteractions(userService);
+    }
+
+    @Test
+    void whenSaveUserWithBlankName_thenStatusIsBadRequest() throws Exception {
+        UserDto userDto = UserDto.builder().name(" ").email("Alfredo@mail.com").build();
+
+        mvc.perform(post("/users")
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        Mockito.verifyNoInteractions(userService);
+    }
+
+    @Test
+    void whenSaveUserWithNullName_thenStatusIsBadRequest() throws Exception {
+        UserDto userDto = UserDto.builder().email("Alfredo@mail.com").build();
+
+        mvc.perform(post("/users")
+                        .content(mapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -228,6 +284,43 @@ class UserControllerTest {
 
         Mockito.verify(userService, Mockito.times(1)).updateUser(userDto, nonExistentId);
         Mockito.verifyNoMoreInteractions(userService);
+    }
+
+    @Test
+    void whenUpdateUserWithNotEmail_thenStatusIsBadRequest() throws Exception {
+        UserDto userDto = UserDto.builder()
+                .name("Alfredo")
+                .email("qwertyui@")
+                .build();
+
+        long anyId = 1L;
+        mvc.perform(patch("/users/" + anyId)
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        Mockito.verifyNoInteractions(userService);
+    }
+
+    @Test
+    void whenUpdateUserWith75SymbolsEmail_thenStatusIsBadRequest() throws Exception {
+        UserDto userDto = UserDto.builder()
+                .name("Alfredo")
+                .email("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop" +
+                        "123456789012345@gmail.com")
+                .build();
+
+        long anyId = 1L;
+        mvc.perform(patch("/users/" + anyId)
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        Mockito.verifyNoInteractions(userService);
     }
 
     @Test

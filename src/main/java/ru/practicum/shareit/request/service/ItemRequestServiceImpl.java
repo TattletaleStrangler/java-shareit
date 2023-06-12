@@ -30,8 +30,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public GetItemRequestDto createItemRequest(AddItemRequestDto itemRequestDto, long userId) {
-        User requester = userDao.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
+        User requester = checkUserAndGet(userId);
 
         ItemRequest itemRequest = ItemRequestMapper.dtoToItemRequest(itemRequestDto, requester);
         ItemRequest savedItemRequest = itemRequestDao.save(itemRequest);
@@ -40,43 +39,47 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public List<GetItemRequestDto> findAllByRequesterId(long requesterId) {
-        User requester = userDao.findById(requesterId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + requesterId + " не найден."));
+        checkUserAndGet(requesterId);
 
         List<ItemRequest> itemRequests = itemRequestDao.findAllByRequesterIdOrderByCreatedDesc(requesterId);
 
-        Map<Long, List<Item>> items = itemDao.findAllByItemRequests(itemRequests)
-                .stream()
-                .collect(Collectors.groupingBy(item -> item.getRequest().getId(), toList()));
+        Map<Long, List<Item>> items = getItemsByItemRequests(itemRequests);
 
         return ItemRequestMapper.itemRequestsToGetItemRequestDto(itemRequests, items);
     }
 
     @Override
     public List<GetItemRequestDto> findAll(long userId, int from, int size) {
-        User requester = userDao.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
+        checkUserAndGet(userId);
 
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
         List<ItemRequest> itemRequests = itemRequestDao.findAllByRequesterIdIsNotOrderByCreatedDesc(userId, page);
 
-        Map<Long, List<Item>> items = itemDao.findAllByItemRequests(itemRequests)
-                .stream()
-                .collect(Collectors.groupingBy(item -> item.getRequest().getId(), toList()));
+        Map<Long, List<Item>> items = getItemsByItemRequests(itemRequests);
 
         return ItemRequestMapper.itemRequestsToGetItemRequestDto(itemRequests, items);
     }
 
     @Override
     public GetItemRequestDto getById(long itemId, long userId) {
-        User requester = userDao.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
+        checkUserAndGet(userId);
 
         ItemRequest itemRequest = itemRequestDao.findById(itemId)
                 .orElseThrow(() -> new UserNotFoundException("Запрос с идентификатором " + itemId + " не найден."));
 
         List<Item> items = itemDao.findAllByItemRequests(List.of(itemRequest));
         return ItemRequestMapper.itemRequestToGetItemRequestDto(itemRequest, items);
+    }
+
+    private User checkUserAndGet(long userId) {
+        return userDao.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
+    }
+
+    private Map<Long, List<Item>> getItemsByItemRequests(List<ItemRequest> itemRequests) {
+        return itemDao.findAllByItemRequests(itemRequests)
+                .stream()
+                .collect(Collectors.groupingBy(item -> item.getRequest().getId(), toList()));
     }
 
 }

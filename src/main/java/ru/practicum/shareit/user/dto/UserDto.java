@@ -15,6 +15,7 @@ public class UserDto {
     private Long id;
 
     @NotBlank(groups = ValidateMarker.Create.class, message = "Имя пользователя не может быть пустым.")
+    @Size(max = 255, message = "Длина имени пользователя не должна превышать 255 символов.")
     private String name;
 
     @NotEmpty(groups = ValidateMarker.Create.class)

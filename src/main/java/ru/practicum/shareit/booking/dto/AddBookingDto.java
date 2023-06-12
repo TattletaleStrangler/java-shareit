@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.booking.validator.StartBeforeEndDateValid;
 
@@ -8,8 +9,9 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
 @StartBeforeEndDateValid
-public class BookingDtoSmall {
+public class AddBookingDto {
     @FutureOrPresent(message = "Дата начала бронирования не может быть в прошлом.")
     private LocalDateTime start;
 

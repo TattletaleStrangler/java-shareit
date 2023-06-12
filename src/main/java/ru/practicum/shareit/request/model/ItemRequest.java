@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -9,9 +10,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Getter
 @Setter
 @ToString
@@ -32,10 +30,11 @@ public class ItemRequest {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    @JoinColumn(name = "requestor_id")
-    private User requestor;
+    @JoinColumn(name = "requester_id")
+    private User requester;
 
     @Column(name = "created", nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime created;
 
     @Override

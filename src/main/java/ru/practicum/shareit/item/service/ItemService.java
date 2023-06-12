@@ -14,9 +14,11 @@ public interface ItemService {
 
     ItemDtoWithBooking getById(long itemId, long userId);
 
-    List<ItemDtoWithBooking> findAllItemsByOwnerId(long userId);
+    List<ItemDtoWithBooking> findAllItemsByOwnerId(long userId, int from, int size);
 
-    List<ItemDto> searchByText(String text);
+    List<ItemDto> searchByText(String text, int from, int size);
 
     CommentDtoResponse addComment(CommentDto commentDto, long userId, long itemId);
+
+    void deleteItem(long itemId);
 }

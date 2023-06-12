@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingDtoForItemDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -19,7 +20,18 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .build();
+    }
+
+    public List<ItemDto> itemsToDto(List<Item> items) {
+        if (items == null || items.isEmpty()) {
+            return List.of();
+        }
+
+        return items.stream()
+                .map(ItemMapper::itemToDto)
+                .collect(Collectors.toList());
     }
 
     public ItemDtoWithBooking itemToDtoWithDate(Item item, BookingDtoForItemDto lastBooking, BookingDtoForItemDto nextBooking) {
@@ -28,18 +40,20 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .lastBooking(lastBooking)
                 .nextBooking(nextBooking)
                 .build();
     }
 
-    public Item dtoToItem(ItemDto itemDto, User owner) {
+    public Item dtoToItem(ItemDto itemDto, User owner, ItemRequest itemRequest) {
         return Item.builder()
                 .id(itemDto.getId())
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
                 .owner(owner)
+                .request(itemRequest)
                 .build();
     }
 

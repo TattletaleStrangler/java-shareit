@@ -12,8 +12,8 @@ import java.util.List;
 @UtilityClass
 public class BookingMapper {
 
-    public List<BookingDto> bookingListToDto(Iterable<Booking> bookings) {
-        List<BookingDto> result = new ArrayList<>();
+    public List<GetBookingDto> bookingListToDto(Iterable<Booking> bookings) {
+        List<GetBookingDto> result = new ArrayList<>();
 
         for (Booking booking : bookings) {
             result.add(bookingToDto(booking));
@@ -22,21 +22,21 @@ public class BookingMapper {
         return result;
     }
 
-    public BookingDto bookingToDto(Booking booking) {
-        return BookingDto.builder()
+    public GetBookingDto bookingToDto(Booking booking) {
+        return GetBookingDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
                 .end(booking.getEnd())
-                .booker(new BookingDto.Booker(booking.getBooker().getId()))
-                .item(new BookingDto.Item(booking.getItem().getId(), booking.getItem().getName()))
+                .booker(new GetBookingDto.Booker(booking.getBooker().getId()))
+                .item(new GetBookingDto.Item(booking.getItem().getId(), booking.getItem().getName()))
                 .status(booking.getStatus())
                 .build();
     }
 
-    public Booking dtoSmallToBooking(BookingDtoSmall bookingDtoSmall, User booker, Item item, BookingStatus status) {
+    public Booking addBookingDtoToBooking(AddBookingDto addBookingDto, User booker, Item item, BookingStatus status) {
         return Booking.builder()
-                .start(bookingDtoSmall.getStart())
-                .end(bookingDtoSmall.getEnd())
+                .start(addBookingDto.getStart())
+                .end(addBookingDto.getEnd())
                 .booker(booker)
                 .item(item)
                 .status(status)

@@ -30,13 +30,6 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleAlreadyExistsException(final UserAlreadyExistsException e) {
-        log.info("Получен статус 409 Conflict {}", e.getMessage(), e);
-        return new ErrorResponse(e.getMessage());
-    }
-
     @ExceptionHandler({ValidationException.class, MethodArgumentNotValidException.class,
             ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -52,20 +45,6 @@ public class ErrorHandler {
         String state = e.getMessage().substring(e.getMessage().lastIndexOf(".") + 1);
         return new ErrorResponse("Unknown state: " + state);
     }
-
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ErrorResponse handleBadRequestException(final MethodArgumentNotValidException e) {
-//        log.info("Получен статус 400 Bad Request {}", e.getMessage(), e);
-//        return new ErrorResponse(e.getMessage());
-//    }
-
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ErrorResponse constraint(ConstraintViolationException e) {
-//        log.info("Получен статус 400 Bad Request {}", e.getMessage(), e);
-//        return new ErrorResponse(e.getMessage());
-//    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)

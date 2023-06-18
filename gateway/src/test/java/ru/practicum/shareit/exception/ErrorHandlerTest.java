@@ -10,11 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.BookingClient;
 import ru.practicum.shareit.booking.BookingController;
-import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.request.AddItemRequestDto;
 import ru.practicum.shareit.request.RequestClient;
 import ru.practicum.shareit.request.RequestController;
-import ru.practicum.shareit.user.UserController;
 
 import java.nio.charset.StandardCharsets;
 

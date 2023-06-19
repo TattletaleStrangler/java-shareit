@@ -112,6 +112,7 @@ class ItemRequestDaoTest {
 
         AddItemRequestDto addItemRequestDto1 = new AddItemRequestDto("Необходима вещь");
         itemRequest1 = ItemRequestMapper.dtoToItemRequest(addItemRequestDto1, requester1);
+        itemRequest1.setCreated(LocalDateTime.now().minusSeconds(3));
         em.persist(itemRequest1);
         itemRequest1.setId(REQUEST_ID1);
 
@@ -127,6 +128,7 @@ class ItemRequestDaoTest {
 
         AddItemRequestDto addItemRequestDto2 = new AddItemRequestDto("Необходим предмет 2");
         itemRequest2 = ItemRequestMapper.dtoToItemRequest(addItemRequestDto2, requester2);
+        itemRequest2.setCreated(LocalDateTime.now().minusSeconds(2));
         em.persist(itemRequest2);
         itemRequest2.setId(REQUEST_ID2);
 
@@ -142,6 +144,7 @@ class ItemRequestDaoTest {
 
         AddItemRequestDto addItemRequestDto3 = new AddItemRequestDto("Необходима приблуда");
         itemRequest3 = ItemRequestMapper.dtoToItemRequest(addItemRequestDto3, requester1);
+        itemRequest3.setCreated(LocalDateTime.now().minusSeconds(1));
         em.persist(itemRequest3);
         itemRequest3.setId(REQUEST_ID3);
 

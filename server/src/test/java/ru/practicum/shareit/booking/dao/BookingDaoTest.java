@@ -198,7 +198,7 @@ class BookingDaoTest {
         booking1.setId(BOOKING_ID1);
         em.flush();
 
-        LocalDateTime bookingStartDate2 = LocalDateTime.now().minusDays(2);
+        LocalDateTime bookingStartDate2 = LocalDateTime.now().minusDays(2).minusHours(10);
         LocalDateTime bookingEndDate2 = LocalDateTime.now().plusDays(5);
         AddBookingDto addBookingDto2 = new AddBookingDto(bookingStartDate2, bookingEndDate2, ITEM_ID2);
         booking2 = BookingMapper.addBookingDtoToBooking(addBookingDto2, booker1, item2, BookingStatus.APPROVED);

@@ -10,8 +10,6 @@ import ru.practicum.shareit.booking.dto.BookingState;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -24,8 +22,8 @@ public class BookingController {
     @GetMapping
     public ResponseEntity<Object> findBookingsByBookerId(@RequestHeader("X-Sharer-User-Id") long userId,
                                                          @RequestParam(name = "state", defaultValue = "all") String stateParam,
-                                                         @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                                         @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                                         @Min(0) @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                         @Min(1) @RequestParam(name = "size", defaultValue = "10") Integer size) {
         BookingState state = BookingState.from(stateParam)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         log.info("Get booking with state {}, userId={}, from={}, size={}", stateParam, userId, from, size);
@@ -33,10 +31,12 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<Object> findBookingsByOwnerId(@RequestParam(defaultValue = "ALL") BookingState state,
+    public ResponseEntity<Object> findBookingsByOwnerId(@RequestParam(name = "state", defaultValue = "all") String stateParam,
                                                         @RequestHeader("X-Sharer-User-Id") long userId,
                                                         @RequestParam(name = "from", defaultValue = "0") @Min(0) int from,
                                                         @RequestParam(name = "size", defaultValue = "10") @Min(1) int size) {
+        BookingState state = BookingState.from(stateParam)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
         log.info("Get /bookings/owner?state={}, userId={}, from={}, size={}", state, userId, from, size);
         return bookingClient.findBookingsByOwnerId(userId, state, from, size);
     }

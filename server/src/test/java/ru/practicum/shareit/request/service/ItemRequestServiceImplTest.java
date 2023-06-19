@@ -50,7 +50,7 @@ class ItemRequestServiceImplTest {
                 .build();
 
         final Long itemRequestId = 1L;
-        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime start = LocalDateTime.now().minusSeconds(1);
 
         UserDto savedUserDto = userService.createUser(userDto);
         itemRequestService.createItemRequest(addItemRequestDto, savedUserDto.getId());
@@ -59,7 +59,7 @@ class ItemRequestServiceImplTest {
         ItemRequest itemRequest = query.setParameter("id", itemRequestId)
                 .getSingleResult();
 
-        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime end = LocalDateTime.now().plusSeconds(1);
 
         assertThat(itemRequest, notNullValue());
         assertThat(itemRequest.getId(), equalTo(itemRequestId));

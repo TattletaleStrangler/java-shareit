@@ -40,7 +40,7 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<GetBookingDto> findBookingsByBookerId(@RequestParam(defaultValue = "ALL") BookingState state,
+    public List<GetBookingDto> findBookingsByBookerId(@RequestParam BookingState state,
                                                       @RequestHeader("X-Sharer-User-Id") long userId,
                                                       @RequestParam(name = "from", defaultValue = "0") int from,
                                                       @RequestParam(name = "size", defaultValue = "10") int size) {
@@ -49,7 +49,7 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public List<GetBookingDto> findBookingsByOwnerId(@RequestParam(defaultValue = "ALL") BookingState state,
+    public List<GetBookingDto> findBookingsByOwnerId(@RequestParam BookingState state,
                                                      @RequestHeader("X-Sharer-User-Id") long userId,
                                                      @RequestParam(name = "from", defaultValue = "0") int from,
                                                      @RequestParam(name = "size", defaultValue = "10") int size) {
